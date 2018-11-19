@@ -1,0 +1,68 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<section class="banner_area">
+    <div class="banner_inner d-flex align-items-center">
+        <div class="container">
+            <div class="banner_content text-center">
+                <h2>Register</h2>
+                <div class="page_link">
+                    <a asp-controller="Home" asp-action="Index">Home</a>
+                    <a asp-controller="Account" asp-action="Register">Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================End Home Banner Area =================-->
+<!--================Login Box Area =================-->
+<section class="login_box_area p_120">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="login_box_img">
+                    <img class="img-fluid" src="~/images/login.jpg" alt="">
+                    <div class="hover">
+                        <h4>Already have an account?</h4>
+                        <p>Simply the best dropshipping website you will find in the space.</p>
+                        <a class="main_btn" href="#">Login with existing account</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="login_form_inner reg_form">
+                    <h3>Create an Account</h3>
+                    <form class="row login_form" method="post" id="contactForm">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <div class="col-md-12 form-group">
+                            <input class="form-control" asp-for="Input.UserName" placeholder="Name">
+                            <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <input class="form-control" asp-for="Input.Email" placeholder="Email Address">
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <input class="form-control" asp-for="Input.Password" placeholder="Password">
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <input class="form-control" asp-for="Input.ConfirmPassword" placeholder="Confirm password">
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <button type="submit" value="submit" class="btn submit_btn">Register</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
