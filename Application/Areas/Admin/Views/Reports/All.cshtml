@@ -1,0 +1,39 @@
+﻿@model ICollection<ReportViewModel>
+
+<section class="banner_area">
+    <div class="banner_inner d-flex align-items-center">
+        <div class="container">
+            <div class="banner_content text-center">
+                <h2>All Reports</h2>
+                <div class="page_link">
+                    <a asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    <a asp-controller="Reports" asp-action="All">All Reports</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="login_box_area m-5">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="login_form_inner">
+                <table class="table">
+                    <thead>
+                    <tr class="row custom-row justify-content-between">
+                        <th class="col-3">Date</th>
+                        <th class="col-2">Reporter</th>
+                        <th class="col-2">Reported</th>
+                        <th class="col-5">Details</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var report in Model)
+                    {
+                        <partial name="_Report" model="@report" />
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>

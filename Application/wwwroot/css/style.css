@@ -5967,6 +5967,10 @@ h6 {
     border-radius: 50% !important;
 }
 
+.custom-row {
+    margin: 0 !important;
+}
+
 /*---------------------------------------------------- */
 
 /*# sourceMappingURL=style.css.map */

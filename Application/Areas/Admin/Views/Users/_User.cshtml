@@ -4,4 +4,17 @@
     <td>@Model.Id</td>
     <td>@Model.UserName</td>
     <td>@Model.Email</td>
+    <td>@Model.Reports</td>
+    <td>@Model.Products</td>
+    <td>@Model.Orders</td>
+    <td>
+        @if (Model.IsRestricted)
+        {
+            <a asp-controller="Users" asp-action="UnRestrict" asp-route-userId="@Model.Id" class="btn btn-success">UnRestrict</a>
+        }
+        else
+        {
+            <a asp-controller="Users" asp-action="Restrict" asp-route-userId="@Model.Id" class="btn btn-warning">Restrict</a>
+        }
+    </td>
 </tr>

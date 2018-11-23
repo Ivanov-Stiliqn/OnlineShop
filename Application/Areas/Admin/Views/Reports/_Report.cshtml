@@ -1,0 +1,8 @@
+﻿@model ReportViewModel
+
+<tr class="row custom-row justify-content-between">
+    <td class="col-3">@Model.Date</td>
+    <td class="col-2"><a asp-controller="Users" asp-action="All" asp-route-search="@Model.Reporter">@Model.Reporter</a></td>
+    <td class="col-2"><a asp-controller="Users" asp-action="All" asp-route-search="@Model.Reported">@Model.Reported</a></td>
+    <td class="col-5">@Model.Details</td>
+</tr>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Application.Infrastructure.Extensions;
 using Application.Infrastructure.Mapping;
+using Application.Infrastructure.Middlewares;
 using Application.Models;
 using AutoMapper;
 using CloudinaryDotNet;
@@ -57,6 +58,8 @@ namespace Application
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider provider)
         {
+            app.UseMiddleware<DatabaseSeedMiddleware>();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
