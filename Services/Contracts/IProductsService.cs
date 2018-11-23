@@ -17,5 +17,9 @@ namespace Services.Contracts
         IQueryable<Product> GetMostOrderedProducts();
 
         IQueryable<Product> GetTopProduct();
+
+        IQueryable<Product> GetProductsByCategory(Guid categoryId, int skip, int take);
+
+        int ProductsCount(Guid categoryId);
     }
 }

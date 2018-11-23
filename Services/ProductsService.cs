@@ -46,5 +46,15 @@ namespace Services
         {
             return this.db.Products.Include(p => p.Orders).OrderByDescending(p => p.Orders.Count).Take(1);
         }
+
+        public IQueryable<Product> GetProductsByCategory(Guid categoryId, int skip, int take)
+        {
+            return this.db.Products.Where(p => p.CategoryId == categoryId).Skip(skip).Take(take);
+        }
+
+        public int ProductsCount(Guid categoryId)
+        {
+            return this.db.Products.Count(p => p.CategoryId == categoryId);
+        }
     }
 }

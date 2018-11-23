@@ -1,0 +1,19 @@
+﻿@model ICollection<ProductViewModel>
+<section class="most_product_area">
+    <div class="main_box">
+        <div class="container">
+            <div class="main_title">
+                <h2>Most Ordered Products</h2>
+                <p>Who are in extremely love with eco friendly system.</p>
+            </div>
+            <div class="row most_product_inner">
+
+                @foreach (var item in Model)
+                {
+                    <partial name="_MostOrderedProduct" model="@item" />
+                }
+
+            </div>
+        </div>
+    </div>
+</section>
