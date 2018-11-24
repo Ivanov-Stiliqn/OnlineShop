@@ -5971,6 +5971,15 @@ h6 {
     margin: 0 !important;
 }
 
+.list input[type='submit']:hover {
+    background: #c5322d;
+    border-color: #c5322d;
+}
+
+input[type="radio"] {
+    margin-right: 10px;
+}
+
 /*---------------------------------------------------- */
 
 /*# sourceMappingURL=style.css.map */

@@ -22,5 +22,13 @@ namespace Application.Models
         public string Category { get; set; }
 
         public string Price { get; set; }
+
+        public string SizeId { get; set; }
+
+        public string Size { get; set; }
+
+        public int Sex { get; set; }
+
+        public string Gender { get; set; }
     }
 }

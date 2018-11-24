@@ -5,6 +5,7 @@ using System.Text;
 using Data;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.Enums;
 using Services.Contracts;
 
 namespace Services
@@ -17,6 +18,8 @@ namespace Services
         {
             this.db = db;
         }
+
+        public int SearchedProductsCount { get; private set; }
 
         public void CreateProduct(Product product, string username)
         {
@@ -47,14 +50,26 @@ namespace Services
             return this.db.Products.Include(p => p.Orders).OrderByDescending(p => p.Orders.Count).Take(1);
         }
 
-        public IQueryable<Product> GetProductsByCategory(Guid categoryId, int skip, int take)
+        public IQueryable<Product> GetProductsByCategory(Guid categoryId, int skip, int take, decimal minPrice, decimal maxPrice, Guid sizeId, Sex sex)
         {
-            return this.db.Products.Where(p => p.CategoryId == categoryId).Skip(skip).Take(take);
-        }
+            var products =  this.db.Products.Where(p => p.CategoryId == categoryId);
+            if (minPrice != 0.0m && maxPrice != 0.0m)
+            {
+                products = products.Where(p => p.Price >= minPrice && p.Price <= maxPrice);
+            }
 
-        public int ProductsCount(Guid categoryId)
-        {
-            return this.db.Products.Count(p => p.CategoryId == categoryId);
+            if (sizeId != Guid.Empty)
+            {
+                products = products.Where(p => p.Sizes.FirstOrDefault(s => s.SizeId == sizeId) != null);
+            }
+
+            if (sex != 0)
+            {
+                products = products.Where(p => p.Sex == sex);
+            }
+
+            this.SearchedProductsCount = products.Count();
+            return products.Skip(skip).Take(take);
         }
     }
 }

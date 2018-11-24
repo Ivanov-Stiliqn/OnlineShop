@@ -86,22 +86,22 @@ namespace Application.Infrastructure.Middlewares
                     });
             }
 
-            if (!db.Reports.Any())
-            {
-                db.Reports.AddRange(new Report()
-                {
-                    Details =
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-                    ReporterId = "03cd4ab7-7864-44f1-84b5-729f4e65c0fb",
-                    ReportedUserId = "1c560c6b-d724-47ca-b22f-7d0277593efd"
-                }, new Report()
-                {
-                    Details =
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-                    ReporterId = "03cd4ab7-7864-44f1-84b5-729f4e65c0fb",
-                    ReportedUserId = "1c560c6b-d724-47ca-b22f-7d0277593efd"
-                });
-            }
+//            if (!db.Reports.Any())
+//            {
+//                db.Reports.AddRange(new Report()
+//                {
+//                    Details =
+//                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+//                    ReporterId = "03cd4ab7-7864-44f1-84b5-729f4e65c0fb",
+//                    ReportedUserId = "1c560c6b-d724-47ca-b22f-7d0277593efd"
+//                }, new Report()
+//                {
+//                    Details =
+//                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+//                    ReporterId = "03cd4ab7-7864-44f1-84b5-729f4e65c0fb",
+//                    ReportedUserId = "1c560c6b-d724-47ca-b22f-7d0277593efd"
+//                });
+//            }
 
             db.SaveChanges();
 
