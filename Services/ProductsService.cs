@@ -71,5 +71,10 @@ namespace Services
             this.SearchedProductsCount = products.Count();
             return products.Skip(skip).Take(take);
         }
+
+        public IQueryable<Product> GetProduct(Guid id)
+        {
+            return this.db.Products.Include(p => p.Orders).Where(p => p.Id == id);
+        }
     }
 }

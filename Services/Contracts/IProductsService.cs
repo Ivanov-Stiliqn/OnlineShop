@@ -22,5 +22,7 @@ namespace Services.Contracts
         IQueryable<Product> GetTopProduct();
 
         IQueryable<Product> GetProductsByCategory(Guid categoryId, int skip, int take, decimal minPrice, decimal maxPrice, Guid sizeId, Sex sex);
+
+        IQueryable<Product> GetProduct(Guid id);
     }
 }

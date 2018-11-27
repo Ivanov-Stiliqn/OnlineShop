@@ -101,5 +101,30 @@ namespace Application.Areas.Shopping.Controllers
 
             return RedirectToAction(nameof(SizesController.Create), "Sizes", new {productId = product.Id});
         }
+
+        public IActionResult Details(string id)
+        {
+            var check = Guid.TryParse(id, out Guid parsedId);
+            if (!check)
+            {
+                this.TempData["Error"] = "Product does not exists.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var product = this.productsService.GetProduct(parsedId).ProjectTo<ProductDetailsViewModel>().FirstOrDefault();
+            if (product == null)
+            {
+                this.TempData["Error"] = "Product does not exists.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var model = new ProductDetailsPageViewModel
+            {
+                Product = product,
+                MostOrderedProducts = this.productsService.GetMostOrderedProducts().ProjectTo<ProductViewModel>().ToList()
+            };
+
+            return View(model);
+        }
     }
 }

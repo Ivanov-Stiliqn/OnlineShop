@@ -8,7 +8,7 @@
                 <a href="#"><i class="lnr lnr-cart"></i></a>
             </div>
         </div>
-        <a href="#"><h4>@Model.Name</h4></a>
+        <a asp-area="Shopping" asp-controller="Products" asp-action="Details" asp-route-id="@Model.Id"><h4>@Model.Name</h4></a>
         <h5>$@Model.Price</h5>
     </div>
 </div>
