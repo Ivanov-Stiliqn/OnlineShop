@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Infrastructure.Mapping;
 using Application.Models;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
+using Models;
 using Services.Contracts;
 
 namespace Application.Views.Shared.Components.Navigation
@@ -24,7 +26,7 @@ namespace Application.Views.Shared.Components.Navigation
         {
             var model = this.service
                 .GetCategories()
-                .ProjectTo<MenuItemViewModel>()
+                .Select(c => c.Map<Category, MenuItemViewModel>())
                 .ToList();
 
             return View(model);

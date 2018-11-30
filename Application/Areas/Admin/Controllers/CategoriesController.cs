@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Application.Areas.Admin.Models;
 using Application.Controllers;
+using Application.Infrastructure.Mapping;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
@@ -40,7 +41,7 @@ namespace Application.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var file = model.Image;
+            var file = model.ImageFile;
 
             var uploadParams = new ImageUploadParams
             {
@@ -50,13 +51,11 @@ namespace Application.Areas.Admin.Controllers
             var result = await cloudinary.UploadAsync(uploadParams);
             var imageUrl = result.Uri;
 
-            var category = new Category()
-            {
-                Name = model.Name,
-                Image = imageUrl.ToString()
-            };
+            var category = model.Map<CreateCategoryViewModel, Category>();
 
-            var check = this.service.Create(category);
+            category.Image = imageUrl.ToString();
+
+            var check = await this.service.Create(category);
             if (!check)
             {
                 ModelState.AddModelError("Name", "Such category already exists.");

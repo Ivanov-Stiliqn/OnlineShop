@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Models;
 
 namespace Services.Contracts
 {
     public interface ISizesService
     {
-        IQueryable<Size> GetSizes();
+        ICollection<Size> GetSizes();
 
-        void Create(ProductSize size);
+        Task Create(ProductSize size);
     }
 }

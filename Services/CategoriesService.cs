@@ -2,42 +2,80 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Data;
+using Data.Repositories;
+using Data.Repositories.Contracts;
+using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.Enums;
 using Services.Contracts;
 
 namespace Services
 {
     public class CategoriesService: ICategoriesService
     {
-        private readonly ApplicationContext db;
+        private readonly IRepository<Category> categoryRepository;
 
-        public CategoriesService(ApplicationContext db)
+        public CategoriesService(IRepository<Category> categoryRepository)
         {
-            this.db = db;
+            this.categoryRepository = categoryRepository;
         }
 
-        public bool Create(Category category)
+        public int SearchedProductsCount { get; private set; }
+
+        public async Task<bool> Create(Category category)
         {
-            var existingCategory = this.db.Categories.FirstOrDefault(c => c.Name == category.Name);
+            var existingCategory = this.categoryRepository.All().FirstOrDefault(c => c.Name == category.Name);
             if (existingCategory != null)
             {
                 return false;
             }
 
-            this.db.Categories.Add(category);
-            this.db.SaveChanges();
+            await this.categoryRepository.AddAsync(category);
+            await this.categoryRepository.SaveChangesAsync();
             return true;
         }
 
-        public IQueryable<Category> GetCategories()
+        public ICollection<Category> GetCategories()
         {
-            return this.db.Categories;
+            return this.categoryRepository.All().ToList();
         }
 
-        public IQueryable<Category> GetTopCategories()
+        public ICollection<Category> GetTopCategories()
         {
-            return this.db.Categories.OrderByDescending(c => c.Views).Take(2);
+            return this.categoryRepository.All().OrderByDescending(c => c.Views).Take(2).ToList();
+        }
+
+        public async Task<ICollection<Product>> GetProductsByCategory(Guid categoryId, int skip, int take, decimal minPrice, decimal maxPrice, Guid sizeId, Sex sex)
+        {
+            var category = this.categoryRepository.All()
+                .Include(c => c.Products)
+                .ThenInclude(c => c.Sizes)
+                .FirstOrDefault(c => c.Id == categoryId);
+
+            category.Views += 1;
+
+            var products = category.Products;
+            if (minPrice != 0.0m && maxPrice != 0.0m)
+            {
+                products = products.Where(p => p.Price >= minPrice && p.Price <= maxPrice).ToList();
+            }
+
+            if (sizeId != Guid.Empty)
+            {
+                products = products.Where(p => p.Sizes.FirstOrDefault(s => s.SizeId == sizeId) != null).ToList();
+            }
+
+            if (sex != 0)
+            {
+                products = products.Where(p => p.Sex == sex).ToList();
+            }
+
+            this.SearchedProductsCount = products.Count();
+
+            await this.categoryRepository.SaveChangesAsync();
+            return products.Skip(skip).Take(take).ToList();
         }
     }
 }

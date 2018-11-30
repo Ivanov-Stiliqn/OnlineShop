@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Areas.Shopping.Controllers;
 using Application.Infrastructure.Mapping;
 using Models;
 
 namespace Application.Areas.Shopping.Models
 {
-    public class CreateSizeViewModel: IMapFrom<Size>
+    public class CreateSizeViewModel: IMapTo<ProductSize>
     {
         [Required]
         [Display(Name = "Size")]
-        public string SizeId { get; set; }
+        public Guid SizeId { get; set; }
 
         public ICollection<SizeListItemViewModel> AllSizes { get; set; }
         

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Data;
+using Data.Repositories.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.Enums;
@@ -12,69 +14,61 @@ namespace Services
 {
     public class ProductsService: IProductsService
     {
-        private readonly ApplicationContext db;
+        private readonly IRepository<Product> productsRepository;
+        private readonly IRepository<User> usersRepository;
 
-        public ProductsService(ApplicationContext db)
+        public ProductsService(
+            IRepository<Product> productsRepository, 
+            IRepository<User> usersRepository)
         {
-            this.db = db;
+            this.productsRepository = productsRepository;
+            this.usersRepository = usersRepository;
         }
 
-        public int SearchedProductsCount { get; private set; }
-
-        public void CreateProduct(Product product, string username)
+        public async Task CreateProduct(Product product, string username)
         {
-            var user = this.db.Users.FirstOrDefault(u => u.UserName == username);
+            var user = this.usersRepository.All().FirstOrDefault(u => u.UserName == username);
             product.CreatorId = user.Id;
 
-            this.db.Products.Add(product);
-            this.db.SaveChanges();
+            await this.productsRepository.AddAsync(product);
+            await this.productsRepository.SaveChangesAsync();
         }
 
-        public IQueryable<Product> GetLatestProducts()
+        public ICollection<Product> GetLatestProducts()
         {
-            return this.db.Products.OrderByDescending(p => p.DateOfCreation).Take(8);
+            return this.productsRepository.All().OrderByDescending(p => p.DateOfCreation).Take(8).ToList();
         }
 
-        public IQueryable<Product> GetMostViewedProducts()
+        public ICollection<Product> GetMostViewedProducts()
         {
-            return this.db.Products.OrderByDescending(p => p.Views).Take(8);
+            return this.productsRepository.All().OrderByDescending(p => p.Views).Take(8).ToList();
         }
 
-        public IQueryable<Product> GetMostOrderedProducts()
+        public ICollection<Product> GetMostOrderedProducts()
         {
-            return this.db.Products.Include(p => p.Orders).OrderByDescending(p => p.Orders.Count).Take(12);
+            return this.productsRepository.All().Include(p => p.Orders).OrderByDescending(p => p.Orders.Count).Take(12).ToList();
         }
 
-        public IQueryable<Product> GetTopProduct()
+        public Product GetTopProduct()
         {
-            return this.db.Products.Include(p => p.Orders).OrderByDescending(p => p.Orders.Count).Take(1);
+            return this.productsRepository.All().Include(p => p.Orders).OrderByDescending(p => p.Orders.Count).FirstOrDefault();
         }
 
-        public IQueryable<Product> GetProductsByCategory(Guid categoryId, int skip, int take, decimal minPrice, decimal maxPrice, Guid sizeId, Sex sex)
+        public async Task<Product> GetProduct(Guid id)
         {
-            var products =  this.db.Products.Where(p => p.CategoryId == categoryId);
-            if (minPrice != 0.0m && maxPrice != 0.0m)
+            var product = this.productsRepository.All()
+                .Include(p => p.Orders)
+                .Include(p => p.Sizes)
+                .ThenInclude(p => p.Size)
+                .FirstOrDefault(p => p.Id == id);
+
+            if (product != null)
             {
-                products = products.Where(p => p.Price >= minPrice && p.Price <= maxPrice);
-            }
+                product.Views += 1;
+                await this.productsRepository.SaveChangesAsync();
+            }  
 
-            if (sizeId != Guid.Empty)
-            {
-                products = products.Where(p => p.Sizes.FirstOrDefault(s => s.SizeId == sizeId) != null);
-            }
-
-            if (sex != 0)
-            {
-                products = products.Where(p => p.Sex == sex);
-            }
-
-            this.SearchedProductsCount = products.Count();
-            return products.Skip(skip).Take(take);
-        }
-
-        public IQueryable<Product> GetProduct(Guid id)
-        {
-            return this.db.Products.Include(p => p.Orders).Where(p => p.Id == id);
+            return product;
         }
     }
 }

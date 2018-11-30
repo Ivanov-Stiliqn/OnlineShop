@@ -10,13 +10,13 @@ using Models;
 
 namespace Application.Areas.Admin.Models
 {
-    public class CreateCategoryViewModel
+    public class CreateCategoryViewModel: IMapTo<Category>
     {
         [Required]
         [Display(Name = "Category name")]
         public string Name { get; set; }
 
         [Required(ErrorMessage = "Please upload a image.")]
-        public IFormFile Image { get; set; }
+        public IFormFile ImageFile { get; set; }
     }
 }

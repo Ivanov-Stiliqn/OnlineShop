@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Data;
+using Data.Repositories.Contracts;
 using Models;
 using Services.Contracts;
 
@@ -10,32 +12,34 @@ namespace Services
 {
     public class SizesService: ISizesService
     {
-        private readonly ApplicationContext db;
+        private readonly IRepository<Size> sizeRepository;
+        private readonly IRepository<ProductSize> productSizeRepository;
 
-        public SizesService(ApplicationContext db)
+        public SizesService(IRepository<Size> sizeRepository, IRepository<ProductSize> productSizeRepository)
         {
-            this.db = db;
+            this.sizeRepository = sizeRepository;
+            this.productSizeRepository = productSizeRepository;
         }
 
-        public IQueryable<Size> GetSizes()
+        public ICollection<Size> GetSizes()
         {
-            return this.db.Sizes;
+            return this.sizeRepository.All().ToList();
         }
 
-        public void Create(ProductSize size)
+        public async Task Create(ProductSize size)
         {
             var existingSize =
-                this.db.ProductSizes.FirstOrDefault(ps => ps.ProductId == size.ProductId && ps.SizeId == size.SizeId);
+                this.productSizeRepository.All().FirstOrDefault(ps => ps.ProductId == size.ProductId && ps.SizeId == size.SizeId);
             if (existingSize != null)
             {
                 existingSize.Quantity += size.Quantity;
             }
             else
             {
-                this.db.ProductSizes.Add(size);
+                await this.productSizeRepository.AddAsync(size);
             }
 
-            this.db.SaveChanges();
+            await this.productSizeRepository.SaveChangesAsync();
         }
     }
 }

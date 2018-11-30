@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Models;
 using Models.Enums;
 
@@ -9,20 +10,16 @@ namespace Services.Contracts
 {
     public interface IProductsService
     {
-        int SearchedProductsCount { get; }
+        Task CreateProduct(Product product, string username);
 
-        void CreateProduct(Product product, string username);
+        ICollection<Product> GetLatestProducts();
 
-        IQueryable<Product> GetLatestProducts();
+        ICollection<Product> GetMostViewedProducts();
 
-        IQueryable<Product> GetMostViewedProducts();
+        ICollection<Product> GetMostOrderedProducts();
 
-        IQueryable<Product> GetMostOrderedProducts();
+        Product GetTopProduct();
 
-        IQueryable<Product> GetTopProduct();
-
-        IQueryable<Product> GetProductsByCategory(Guid categoryId, int skip, int take, decimal minPrice, decimal maxPrice, Guid sizeId, Sex sex);
-
-        IQueryable<Product> GetProduct(Guid id);
+        Task<Product> GetProduct(Guid id);
     }
 }

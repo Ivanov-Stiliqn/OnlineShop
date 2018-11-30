@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Application.Areas.Shopping.Models;
 using Application.Controllers;
+using Application.Infrastructure.Mapping;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Models;
@@ -24,18 +25,18 @@ namespace Application.Areas.Shopping.Controllers
         {
             var model = new CreateSizeViewModel
             {
-                AllSizes = service.GetSizes().ProjectTo<SizeListItemViewModel>().ToList()
+                AllSizes = service.GetSizes().Select(s => s.Map<Size, SizeListItemViewModel>()).ToList()
             };
 
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult Create(CreateSizeViewModel model, string submit, string productId)
+        public async Task<IActionResult> Create(CreateSizeViewModel model, string submit, string productId)
         {
             if (!ModelState.IsValid)
             {
-                model.AllSizes = service.GetSizes().ProjectTo<SizeListItemViewModel>().ToList();
+                model.AllSizes = service.GetSizes().Select(s => s.Map<Size, SizeListItemViewModel>()).ToList();
                 return View(model);
             }
 
@@ -46,22 +47,11 @@ namespace Application.Areas.Shopping.Controllers
                 return RedirectToAction(nameof(ProductsController.Index), "Products");
             }
 
-            var sizeCheck = Guid.TryParse(model.SizeId, out Guid parsedSizeId);
-            if (!sizeCheck)
-            {
-                ModelState.AddModelError("SizeId", "Size does not exists.");
-                model.AllSizes = service.GetSizes().ProjectTo<SizeListItemViewModel>().ToList();
-                return View(model);
-            }
+            var size = model.Map<CreateSizeViewModel, ProductSize>();
 
-            var size = new ProductSize
-            {
-                ProductId = parsedProductId,
-                SizeId = parsedSizeId,
-                Quantity = model.Quantity
-            };
+            size.ProductId = parsedProductId;
 
-            this.service.Create(size);
+            await this.service.Create(size);
             this.TempData["Success"] = "Size added.";
 
             if (!string.IsNullOrEmpty(submit))

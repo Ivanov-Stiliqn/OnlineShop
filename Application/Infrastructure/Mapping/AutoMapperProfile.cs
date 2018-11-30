@@ -17,12 +17,12 @@ namespace Application.Infrastructure.Mapping
                 .Where(a => a.GetName().Name.Contains("Application"))
                 .SelectMany(a => a.GetTypes());
 
-           allTypes
+            allTypes
                 .Where(t => t.IsClass && !t.IsAbstract && t.GetInterfaces()
                                 .Where(i => i.IsGenericType)
                                 .Select(i => i.GetGenericTypeDefinition())
                                 .FirstOrDefault() == typeof(IMapFrom<>))
-                 .Select(t => new
+                .Select(t => new
                 {
                     Destination = t,
                     Source = t
@@ -41,12 +41,34 @@ namespace Application.Infrastructure.Mapping
                 .ForEach(m => CreateMap(m.Source, m.Destination));
 
             allTypes
+                .Where(t => t.IsClass && !t.IsAbstract && t.GetInterfaces()
+                                .Where(i => i.IsGenericType)
+                                .Select(i => i.GetGenericTypeDefinition())
+                                .FirstOrDefault() == typeof(IMapTo<>))
+                .Select(t => new
+                {
+                    Source = t,
+                    Destination = t
+                        .GetInterfaces()
+                        .Where(i => i.IsGenericType)
+                        .Select(i => new
+                        {
+                            Definition = i.GetGenericTypeDefinition(),
+                            Arguments = i.GetGenericArguments()
+                        })
+                        .Where(i => i.Definition == typeof(IMapTo<>))
+                        .SelectMany(i => i.Arguments)
+                        .First()
+                })
+                .ToList()
+                .ForEach(m => CreateMap(m.Source, m.Destination));
+
+            allTypes
                 .Where(t => t.IsClass && !t.IsAbstract && typeof(ICustomMapping).IsAssignableFrom(t))
                 .Select(Activator.CreateInstance)
                 .Cast<ICustomMapping>()
                 .ToList()
                 .ForEach(c => c.ConfigureMapping(this));
-
         }
     }
 }

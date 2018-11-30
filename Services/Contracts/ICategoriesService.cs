@@ -2,16 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Models;
+using Models.Enums;
 
 namespace Services.Contracts
 {
     public interface ICategoriesService
     {
-        bool Create(Category category);
+        int SearchedProductsCount { get; }
 
-        IQueryable<Category> GetCategories();
+        Task<bool> Create(Category category);
 
-        IQueryable<Category> GetTopCategories();
+        ICollection<Category> GetCategories();
+
+        ICollection<Category> GetTopCategories();
+
+        Task<ICollection<Product>> GetProductsByCategory(
+            Guid categoryId, 
+            int skip, 
+            int take, 
+            decimal minPrice, 
+            decimal maxPrice, 
+            Guid sizeId, 
+            Sex sex);
     }
 }

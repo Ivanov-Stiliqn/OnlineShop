@@ -8,6 +8,6 @@ namespace Services.Contracts
 {
     public interface IReportsService
     {
-        IQueryable<Report> GetReports();
+        ICollection<Report> GetReports();
     }
 }

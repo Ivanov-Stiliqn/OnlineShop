@@ -1,13 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
+using Application.Infrastructure.Mapping;
 using Microsoft.AspNetCore.Http;
 using Models;
 using Models.Enums;
 
 namespace Application.Areas.Shopping.Models
 {
-    public class CreateProductViewModel
+    public class CreateProductViewModel: IMapTo<Product>
     {
         [Required]
         public string Name { get; set; }
@@ -17,7 +19,7 @@ namespace Application.Areas.Shopping.Models
 
         [Required]
         [Display(Name = "Category")]
-        public string CategoryId { get; set; }
+        public Guid CategoryId { get; set; }
 
         [Required]
         public string Color { get; set; }
@@ -34,6 +36,6 @@ namespace Application.Areas.Shopping.Models
         public ICollection<CategoryListItemViewModel> AllCategories { get; set; }
 
         [Required(ErrorMessage = "Please upload at least one image.")]
-        public ICollection<IFormFile> Images { get; set; }
+        public ICollection<IFormFile> ImagesFiles { get; set; }
     }
 }

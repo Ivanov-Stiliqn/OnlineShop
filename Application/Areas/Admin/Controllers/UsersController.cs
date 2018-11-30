@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Application.Areas.Admin.Models;
+using Application.Infrastructure.Mapping;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
@@ -24,17 +25,15 @@ namespace Application.Areas.Admin.Controllers
         public IActionResult All(string search)
         {
             var users = search != null ? this.service.SearchByName(search, this.User.Identity.Name) : this.service.AllUsers(this.User.Identity.Name);
-            var model = users
-                .ProjectTo<UserViewModel>()
-                .ToList();
+            var model = users.Select(u => u.Map<User, UserViewModel>()).ToList();
 
 
             return View(model);
         }
 
-        public IActionResult Restrict(string userId)
+        public async Task<IActionResult> Restrict(string userId)
         {
-            var check = this.service.RestrictUser(userId);
+            var check = await this.service.RestrictUser(userId);
             if (!check)
             {
                 this.TempData["Error"] = "User does not exists.";
@@ -45,9 +44,9 @@ namespace Application.Areas.Admin.Controllers
             return RedirectToAction(nameof(All));
         }
 
-        public IActionResult UnRestrict(string userId)
+        public async Task<IActionResult> UnRestrict(string userId)
         {
-            var check = this.service.UnRestrictUser(userId);
+            var check = await this.service.UnRestrictUser(userId);
             if (!check)
             {
                 this.TempData["Error"] = "User does not exists.";

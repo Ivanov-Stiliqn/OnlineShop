@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Areas.Shopping.Models;
+using Application.Infrastructure.Mapping;
 using Application.Models;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
+using Models;
 using Models.Enums;
 using Services.Contracts;
 
@@ -24,10 +26,10 @@ namespace Application.Areas.Shopping.Controllers
             this.sizesService = sizesService;
         }
 
-        public IActionResult Products(string categoryId, string price, string sizeId, Sex sex, int page = 1)
+        public async Task<IActionResult> Products(string categoryId, string price, string sizeId, Sex sex, int page = 1)
         {
             var check = Guid.TryParse(categoryId, out Guid parsedCategoryId);
-            var categories = this.categoriesService.GetCategories().ProjectTo<MenuItemViewModel>().ToList();
+            var categories = this.categoriesService.GetCategories().Select(c => c.Map<Category, MenuItemViewModel>()).ToList();
             var category = categories.FirstOrDefault(c => c.Id == categoryId);
             if (!check || category == null)
             {
@@ -68,10 +70,14 @@ namespace Application.Areas.Shopping.Controllers
             var skip = (page - 1) * size;
             var take = size;
 
-            var products = this.productsService.GetProductsByCategory(parsedCategoryId, skip, take, minPrice, maxPrice, parseSizeId, sex).ProjectTo<ProductViewModel>()
+            var categoryProducts = await this.categoriesService.GetProductsByCategory(parsedCategoryId, skip, take,
+                minPrice, maxPrice, parseSizeId, sex);
+
+            var products = categoryProducts
+                .Select(p => p.Map<Product, ProductViewModel>())
                 .ToList();
 
-            var productsCount = this.productsService.SearchedProductsCount;
+            var productsCount = this.categoriesService.SearchedProductsCount;
 
             var totalPages = (int)Math.Ceiling(decimal.Divide(productsCount, size));
             var first = 1;
@@ -79,14 +85,14 @@ namespace Application.Areas.Shopping.Controllers
             var previuous = Math.Max(page - 1, first);
             var next = Math.Min(page + 1, last);
 
-            var sizes = this.sizesService.GetSizes().ProjectTo<SizeListItemViewModel>().ToList();
+            var sizes = this.sizesService.GetSizes().Select(s => s.Map<Size, SizeListItemViewModel>()).ToList();
             var currentSize = sizes.Where(s => s.Id == sizeId).Select(s => s.Name).FirstOrDefault();
 
             var model = new CategoryProductsViewModel
             {
                 Products = products,
                 MostOrderedProducts =
-                    this.productsService.GetMostOrderedProducts().ProjectTo<ProductViewModel>().ToList(),
+                    this.productsService.GetMostOrderedProducts().Select(p => p.Map<Product, ProductViewModel>()).ToList(),
                 Pagination = new Pagination
                 {
                     First = first,

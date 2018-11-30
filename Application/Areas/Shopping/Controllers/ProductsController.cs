@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Areas.Shopping.Models;
+using Application.Infrastructure.Mapping;
 using AutoMapper.QueryableExtensions;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
@@ -30,11 +31,11 @@ namespace Application.Areas.Shopping.Controllers
         {
             var model = new HomeViewModel()
             {
-                Latest = this.productsService.GetLatestProducts().ProjectTo<ProductViewModel>().ToList(),
-                MostViewed = this.productsService.GetMostViewedProducts().ProjectTo<ProductViewModel>().ToList(),
-                MostOrderedProducts = this.productsService.GetMostOrderedProducts().ProjectTo<ProductViewModel>().ToList(),
-                TopProduct = this.productsService.GetTopProduct().ProjectTo<TopProductViewModel>().ToList().First(),
-                TopCategories = this.categoriesService.GetTopCategories().ProjectTo<CategoryViewModel>().ToList()
+                Latest = this.productsService.GetLatestProducts().Select(p => p.Map<Product, ProductViewModel>()).ToList(),
+                MostViewed = this.productsService.GetMostViewedProducts().Select(p => p.Map<Product, ProductViewModel>()).ToList(),
+                MostOrderedProducts = this.productsService.GetMostOrderedProducts().Select(p => p.Map<Product, ProductViewModel>()).ToList(),
+                TopProduct = this.productsService.GetTopProduct().Map<Product, TopProductViewModel>(),
+                TopCategories = this.categoriesService.GetTopCategories().Select(c => c.Map<Category, CategoryViewModel>()).ToList()
             };
 
             return View(model);
@@ -44,7 +45,7 @@ namespace Application.Areas.Shopping.Controllers
         {
             var model = new CreateProductViewModel
             {
-                AllCategories = this.categoriesService.GetCategories().ProjectTo<CategoryListItemViewModel>().ToList()
+                AllCategories = this.categoriesService.GetCategories().Select(c => c.Map<Category, CategoryListItemViewModel>()).ToList()
             };
 
             return View(model);
@@ -55,17 +56,8 @@ namespace Application.Areas.Shopping.Controllers
         {
             if (!ModelState.IsValid)
             {
-                model.AllCategories = this.categoriesService.GetCategories().ProjectTo<CategoryListItemViewModel>()
-                    .ToList();
-
-                return View(model);
-            }
-
-            var check = Guid.TryParse(model.CategoryId, out Guid parsedCategoryId);
-            if (!check)
-            {
-                ModelState.AddModelError("CategoryId", "Category does not exists.");
-                model.AllCategories = this.categoriesService.GetCategories().ProjectTo<CategoryListItemViewModel>()
+                model.AllCategories = this.categoriesService.GetCategories()
+                    .Select(c => c.Map<Category, CategoryListItemViewModel>())
                     .ToList();
 
                 return View(model);
@@ -73,7 +65,7 @@ namespace Application.Areas.Shopping.Controllers
 
             var urls = new List<string>();
 
-            foreach (var formFile in model.Images)
+            foreach (var formFile in model.ImagesFiles)
             {
                 var uploadParams = new ImageUploadParams
                 {
@@ -84,25 +76,17 @@ namespace Application.Areas.Shopping.Controllers
                 urls.Add(result.Uri.ToString());
             }
 
-            var product = new Product()
-            {
-                Name = model.Name,
-                CategoryId = parsedCategoryId,
-                Description = model.Description,
-                Details = model.Details,
-                Color = model.Color,
-                Price = model.Price,
-                Sex = model.Sex,
-                ImageUrls = string.Join(", ", urls)
-            };
+            var product = model.Map<CreateProductViewModel, Product>();
 
-            this.productsService.CreateProduct(product, User.Identity.Name);
+            product.ImageUrls = string.Join(", ", urls);
+
+            await this.productsService.CreateProduct(product, User.Identity.Name);
             this.TempData["Success"] = "Product added. Please choose sizes.";
 
             return RedirectToAction(nameof(SizesController.Create), "Sizes", new {productId = product.Id});
         }
 
-        public IActionResult Details(string id)
+        public async Task<IActionResult> Details(string id)
         {
             var check = Guid.TryParse(id, out Guid parsedId);
             if (!check)
@@ -111,17 +95,19 @@ namespace Application.Areas.Shopping.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var product = this.productsService.GetProduct(parsedId).ProjectTo<ProductDetailsViewModel>().FirstOrDefault();
+            var product = await this.productsService.GetProduct(parsedId);
             if (product == null)
             {
                 this.TempData["Error"] = "Product does not exists.";
                 return RedirectToAction(nameof(Index));
             }
 
+            var details = product.Map<Product, ProductDetailsViewModel>();
+
             var model = new ProductDetailsPageViewModel
             {
-                Product = product,
-                MostOrderedProducts = this.productsService.GetMostOrderedProducts().ProjectTo<ProductViewModel>().ToList()
+                Product = details,
+                MostOrderedProducts = this.productsService.GetMostOrderedProducts().Select(p => p.Map<Product, ProductViewModel>()).ToList()
             };
 
             return View(model);

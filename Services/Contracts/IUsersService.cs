@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Models;
 
 namespace Services.Contracts
 {
     public interface IUsersService
     {
-        IQueryable<User> AllUsers(string currentUser);
+        ICollection<User> AllUsers(string currentUser);
 
-        IQueryable<User> SearchByName(string search, string currentUser);
+        ICollection<User> SearchByName(string search, string currentUser);
 
-        bool RestrictUser(string userId);
+        Task<bool> RestrictUser(string userId);
 
-        bool UnRestrictUser(string userId);
+        Task<bool> UnRestrictUser(string userId);
     }
 }

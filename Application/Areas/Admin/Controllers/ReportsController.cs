@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Areas.Admin.Models;
+using Application.Infrastructure.Mapping;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
+using Models;
 using Services.Contracts;
 
 namespace Application.Areas.Admin.Controllers
@@ -20,7 +22,7 @@ namespace Application.Areas.Admin.Controllers
 
         public IActionResult All()
         {
-            var reports = this.service.GetReports().ProjectTo<ReportViewModel>().ToList();
+            var reports = this.service.GetReports().Select(r => r.Map<Report, ReportViewModel>()).ToList();
             return View(reports);
         }
     }

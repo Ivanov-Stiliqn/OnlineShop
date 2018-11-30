@@ -9,6 +9,8 @@ using Application.Models;
 using AutoMapper;
 using CloudinaryDotNet;
 using Data;
+using Data.Repositories;
+using Data.Repositories.Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
@@ -41,7 +43,7 @@ namespace Application
             });
 
             services.AddDomainServices();
-            services.AddAutoMapper();
+            services.AddAutoMapper(options => options.AddProfile<AutoMapperProfile>());
             Mapper.Initialize(cfg =>
             {
                 cfg.AddProfile<AutoMapperProfile>();
@@ -52,6 +54,9 @@ namespace Application
                 Configuration.GetSection("CloudinarySettings")["AppKey"],
                 Configuration.GetSection("CloudinarySettings")["AppSecret"]
             ));
+
+            services.AddScoped(typeof(IRepository<>), typeof(DbRepository<>));
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
