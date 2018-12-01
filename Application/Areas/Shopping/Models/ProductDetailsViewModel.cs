@@ -10,6 +10,8 @@ namespace Application.Areas.Shopping.Models
 {
     public class ProductDetailsViewModel: IMapFrom<Product>, ICustomMapping
     {
+        public Guid Id { get; set; }
+
         public string Name { get; set; }
 
         public decimal Price { get; set; }
@@ -26,18 +28,22 @@ namespace Application.Areas.Shopping.Models
 
         public int Orders { get; set; }
 
+        public Guid CategoryId { get; set; }
+
+        public ICollection<ReviewViewModel> Reviews { get; set; }
+
+        public decimal Rating => this.Reviews.Count > 0
+            ? Math.Ceiling((decimal) this.Reviews.Select(r => r.Stars).Sum() / this.Reviews.Count)
+            : 0.0m;
+
         public ICollection<string> Images { get; set; }
 
         public ICollection<SizeViewModel> Sizes { get; set; }
 
         public void ConfigureMapping(AutoMapper.Profile profile)
             => profile.CreateMap<Product, ProductDetailsViewModel>()
-                .ForMember(p => p.Sizes, cfg => cfg.MapFrom(p => p.Sizes.Select(s => new SizeViewModel
-                {
-                    Id = s.Size.Id,
-                    Quantity = s.Quantity,
-                    Name = s.Size.Name
-                })))
-            .ForMember(p => p.Orders, cfg => cfg.MapFrom(p => p.Orders.Count));
+                .ForMember(p => p.Sizes, cfg => cfg.MapFrom(p => p.Sizes.Select(s => s.Map<ProductSize, SizeViewModel>())))
+            .ForMember(p => p.Orders, cfg => cfg.MapFrom(p => p.Orders.Count))
+            .ForMember(p => p.Reviews, cfg => cfg.MapFrom(p => p.Reviews.Select(s => s.Map<Review, ReviewViewModel>())));
     }
 }

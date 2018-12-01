@@ -58,8 +58,10 @@ namespace Services
         {
             var product = this.productsRepository.All()
                 .Include(p => p.Orders)
+                .Include(p => p.Reviews)
+                    .ThenInclude(r => r.User)
                 .Include(p => p.Sizes)
-                .ThenInclude(p => p.Size)
+                    .ThenInclude(p => p.Size)
                 .FirstOrDefault(p => p.Id == id);
 
             if (product != null)

@@ -6,7 +6,7 @@
                     <img width="70" height="70" src="@Model.Image" alt="">
                 </div>
                 <div class="media-body">
-                    <a href="#"><h4>@Model.Name</h4></a>
+                    <a asp-area="Shopping" asp-controller="Products" asp-action="Details" asp-route-id="@Model.Id"><h4>@Model.Name</h4></a>
                     <h3>$@Model.Price</h3>
                 </div>
             </div>    

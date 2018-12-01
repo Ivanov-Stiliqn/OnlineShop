@@ -12,7 +12,7 @@
                 <div class="col-lg-5">
                     <h3>@Model.TopProduct.Name <br />Top Product!</h3>
                     <p>@Model.TopProduct.DescriptionWords</p>
-                    <a class="white_bg_btn" href="#">View More</a>
+                    <a class="white_bg_btn" asp-area="Shopping" asp-controller="Products" asp-action="Details" asp-route-id="@Model.TopProduct.Id">View More</a>
                 </div>
                 <div class="col-lg-7">
                     <div class="halemet_img">

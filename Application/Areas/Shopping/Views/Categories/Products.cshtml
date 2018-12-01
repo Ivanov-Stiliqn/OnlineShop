@@ -7,7 +7,6 @@
                 <h2>@Model.CurrentCategory.Name</h2>
                 <div class="page_link">
                     <a asp-controller="Products" asp-action="Index">Home</a>
-                    <a href="#">Category</a>
                     <a asp-controller="Categories" asp-action="Products" asp-route-categoryId="@Model.CurrentCategory.Id">@Model.CurrentCategory.Name</a>
                 </div>
             </div>

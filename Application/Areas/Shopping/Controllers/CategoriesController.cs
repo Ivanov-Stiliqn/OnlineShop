@@ -113,6 +113,7 @@ namespace Application.Areas.Shopping.Controllers
                 Sizes = sizes
             };
 
+            this.TempData["currentCategory"] = category.Name;
             return View(model);
         }
     }

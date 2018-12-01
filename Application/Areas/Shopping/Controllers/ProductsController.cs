@@ -19,12 +19,18 @@ namespace Application.Areas.Shopping.Controllers
         private readonly Cloudinary cloudinary;
         private readonly ICategoriesService categoriesService;
         private readonly IProductsService productsService;
+        private readonly IReviewService reviewService;
 
-        public ProductsController(Cloudinary cloudinary, ICategoriesService categoriesService, IProductsService productsService)
+        public ProductsController(
+            Cloudinary cloudinary, 
+            ICategoriesService categoriesService, 
+            IProductsService productsService,
+            IReviewService reviewService)
         {
             this.cloudinary = cloudinary;
             this.categoriesService = categoriesService;
             this.productsService = productsService;
+            this.reviewService = reviewService;
         }
 
         public IActionResult Index()
@@ -111,6 +117,43 @@ namespace Application.Areas.Shopping.Controllers
             };
 
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Details(ProductDetailsPageViewModel model, string id)
+        {
+            var check = Guid.TryParse(id, out Guid parsedId);
+            if (!check)
+            {
+                this.TempData["Error"] = "Product does not exists.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (!this.ModelState.IsValid)
+            {
+                var product = await this.productsService.GetProduct(parsedId);
+                if (product == null)
+                {
+                    this.TempData["Error"] = "Product does not exists.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                var details = product.Map<Product, ProductDetailsViewModel>();
+
+                model.Product = details;
+                model.MostOrderedProducts = this.productsService.GetMostOrderedProducts()
+                    .Select(p => p.Map<Product, ProductViewModel>()).ToList();
+                
+
+                return View(model);
+            }
+
+            var review = model.Map<ProductDetailsPageViewModel, Review>();
+            review.ProductId = parsedId;
+
+            await this.reviewService.Create(review, this.User.Identity.Name);
+
+            return RedirectToAction(nameof(Details), new {id});
         }
     }
 }
