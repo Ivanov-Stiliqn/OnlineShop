@@ -4,8 +4,8 @@
         <div class="f_p_img">
             <img class="img-fluid" src="@Model.Image" alt="">
             <div class="p_icon">
-                <a href="#"><i class="lnr lnr-heart"></i></a>
-                <a href="#"><i class="lnr lnr-cart"></i></a>
+                <a class="add-to-whishlist" data-id="@Model.Id" href="#"><i class="lnr lnr-heart"></i></a>
+                <a asp-area="Shopping" asp-controller="Products" asp-action="Details" asp-route-id="@Model.Id"><i class="lnr lnr-cart"></i></a>
             </div>
         </div>
         <a asp-area="Shopping" asp-controller="Products" asp-action="Details" asp-route-id="@Model.Id"><h4>@Model.Name</h4></a>

@@ -72,5 +72,16 @@ namespace Services
 
             return product;
         }
+
+        public Product GetProductForCart(string id)
+        {
+            var check = Guid.TryParse(id, out Guid parsedId);
+            if (!check)
+            {
+                return null;
+            }
+
+            return this.productsRepository.All().FirstOrDefault(p => p.Id == parsedId);
+        }
     }
 }

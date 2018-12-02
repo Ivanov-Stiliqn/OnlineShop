@@ -21,6 +21,8 @@ namespace Data
 
         public DbSet<Order> Orders { get; set; }
 
+        public DbSet<UserInfo> UserInfos { get; set; }
+
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
         {
@@ -31,6 +33,8 @@ namespace Data
             base.OnModelCreating(builder);
 
             builder.Entity<User>().HasMany(u => u.MyProducts).WithOne(p => p.Creator).HasForeignKey(p => p.CreatorId);
+
+            builder.Entity<User>().HasOne(u => u.UserInfo).WithOne(u => u.User).HasForeignKey<UserInfo>(u => u.UserId);
 
             builder.Entity<ProductSize>().HasOne(ps => ps.Product).WithMany(p => p.Sizes)
                 .HasForeignKey(ps => ps.ProductId);

@@ -21,5 +21,7 @@ namespace Services.Contracts
         Product GetTopProduct();
 
         Task<Product> GetProduct(Guid id);
+
+        Product GetProductForCart(string id);
     }
 }

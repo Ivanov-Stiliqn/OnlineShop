@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
 namespace Models
@@ -18,6 +19,10 @@ namespace Models
         public ICollection<Product> MyProducts { get; set; }
 
         public bool IsRestricted { get; set; }
+
+        public string Whishlist { get; set; }
+
+        public UserInfo UserInfo { get; set; }
 
         public ICollection<Report> Reports { get; set; }
 

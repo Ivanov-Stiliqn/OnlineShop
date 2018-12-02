@@ -14,10 +14,14 @@ namespace Services
     public class UsersService: IUsersService
     {
         private readonly IRepository<User> usersRepository;
+        private readonly IRepository<UserInfo> userInfoRepository;
+        private readonly IRepository<Product> productsRepository;
 
-        public UsersService(IRepository<User> usersRepository)
+        public UsersService(IRepository<User> usersRepository, IRepository<UserInfo> userInfoRepository, IRepository<Product> productsRepository)
         {
             this.usersRepository = usersRepository;
+            this.userInfoRepository = userInfoRepository;
+            this.productsRepository = productsRepository;
         }
 
         public ICollection<User> AllUsers(string currentUser)
@@ -65,6 +69,66 @@ namespace Services
             user.IsRestricted = false;
             await this.usersRepository.SaveChangesAsync();
             return true;
+        }
+
+        public UserInfo GetUserInfo(string username)
+        {
+            return this.usersRepository.All().Include(u => u.UserInfo).Where(u => u.UserName == username)
+                .Select(u => u.UserInfo).FirstOrDefault();
+        }
+
+        public async Task UpdateUserInfo(UserInfo userInfo, string username)
+        {
+            if (userInfo.Id != Guid.Empty)
+            {
+                this.userInfoRepository.Update(userInfo);
+                await this.userInfoRepository.SaveChangesAsync();
+            }
+
+            var user = this.usersRepository.All().FirstOrDefault(u => u.UserName == username);
+            user.UserInfo = userInfo;
+
+            await this.usersRepository.SaveChangesAsync();
+           
+        }
+
+        public async Task AddProductToWhishlist(string productId, string username)
+        {
+            var user = this.usersRepository.All().FirstOrDefault(u => u.UserName == username);
+            if (string.IsNullOrEmpty(user.Whishlist))
+            {
+                user.Whishlist = string.Empty;
+            }
+
+            var whishlist = user.Whishlist.Split(new []{", "}, StringSplitOptions.RemoveEmptyEntries).ToList();
+            whishlist.Add(productId);
+
+            user.Whishlist = string.Join(", ", whishlist);
+
+            await this.usersRepository.SaveChangesAsync();
+        }
+
+        public ICollection<Product> GetWishList(string username)
+        {
+            var user = this.usersRepository.All().FirstOrDefault(u => u.UserName == username);
+            var wishlist = user.Whishlist.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            return this.productsRepository
+                .All()
+                .Include(p => p.Sizes)
+                .ThenInclude(p => p.Size)
+                .Where(p => wishlist.Contains(p.Id.ToString()))
+                .ToList();
+        }
+
+        public async Task RemoveProductFromWishlist(string productId, string username)
+        {
+            var user = this.usersRepository.All().FirstOrDefault(u => u.UserName == username);
+            var wishlist = user.Whishlist.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            user.Whishlist = string.Join(", ", wishlist.Where(p => p != productId));
+
+            await this.usersRepository.SaveChangesAsync();
         }
     }
 }

@@ -30,6 +30,11 @@ namespace Data.Repositories
             await this.dbSet.AddAsync(entity);
         }
 
+        public void Update(TEntity entity)
+        {
+            this.dbSet.Update(entity);
+        }
+
         public void Delete(TEntity entity)
         {
             this.dbSet.Remove(entity);

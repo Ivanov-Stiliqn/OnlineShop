@@ -45,6 +45,36 @@
 <script src="~/js/mail-script.js"></script>
 <script src="~/lib/jquery-ui/jquery-ui.js"></script>
 <script src="~/js/theme.js"></script>
+<script type="text/javascript">
+ 
+    $(document).ready(function () {
+        $('.add-to-whishlist').on("click", function(e){
+ 
+            let id = $(e.delegateTarget).data('id');
+            $.ajax({
+                type: "GET",
+                url: '/Profile/Wishlist/Add',
+                data: ({ productId: id }),
+                success: function(data) {
+                    if (data) {
+                        alert('Product added to wishlist');
+                    } else {
+                        alert('Product does not exist.');
+                    };
+
+                },
+                error: function() {
+                    alert('Error occured');
+                }
+            });
+
+
+            e.preventDefault();
+ 
+        });
+    });
+ 
+</script>
 @RenderSection("Scripts", required: false)
 </body>
 </html>

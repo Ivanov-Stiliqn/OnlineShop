@@ -6007,6 +6007,10 @@ input[type="radio"] {
     margin-right: 10px;
 }
 
+td span {
+    float: right;
+}
+
 /*---------------------------------------------------- */
 
 /*# sourceMappingURL=style.css.map */

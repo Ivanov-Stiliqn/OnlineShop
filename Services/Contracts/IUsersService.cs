@@ -16,5 +16,15 @@ namespace Services.Contracts
         Task<bool> RestrictUser(string userId);
 
         Task<bool> UnRestrictUser(string userId);
+
+        UserInfo GetUserInfo(string username);
+
+        Task UpdateUserInfo(UserInfo userInfo, string username);
+
+        Task AddProductToWhishlist(string productId, string username);
+
+        ICollection<Product> GetWishList(string username);
+
+        Task RemoveProductFromWishlist(string productId, string username);
     }
 }

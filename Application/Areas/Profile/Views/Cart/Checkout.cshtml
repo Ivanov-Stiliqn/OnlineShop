@@ -1,0 +1,90 @@
+﻿@model CheckoutPageViewModel
+
+<section class="banner_area">
+    <div class="banner_inner d-flex align-items-center">
+        <div class="container">
+            <div class="banner_content text-center">
+                <h2>Product Checkout</h2>
+                <div class="page_link">
+                    <a asp-area="Shopping" asp-controller="Products" asp-action="Index">Home</a>
+                    <a asp-controller="Cart" asp-action="Checkout">Checkout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================End Home Banner Area =================-->
+<!--================Checkout Area =================-->
+<section class="checkout_area p_120">
+    <div class="container">
+        <div class="billing_details">
+            <div class="row">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <form class="row contact_form" method="post">
+                    <div class="col-lg-8">
+                        <h3>Billing Details</h3>
+                        <input type="hidden" asp-for="@Model.UserInfoId"/>
+                        <div class="col-md-6 form-group p_star">
+                            <input class="form-control" id="first" asp-for="@Model.UserInfo.FirstName" placeholder="First name">
+                            <span asp-validation-for="@Model.UserInfo.FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 form-group p_star">
+                            <input class="form-control" id="last" asp-for="@Model.UserInfo.LastName" placeholder="Last name">
+                            <span asp-validation-for="@Model.UserInfo.LastName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 form-group p_star">
+                            <input class="form-control" id="number" asp-for="@Model.UserInfo.Phone" placeholder="Phone number">
+                            <span asp-validation-for="@Model.UserInfo.Phone" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 form-group p_star">
+                            <input class="form-control" id="email" asp-for="@Model.UserInfo.Email" placeholder="Email Address">
+                            <span asp-validation-for="@Model.UserInfo.Email" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-12 form-group p_star">
+                            <input class="form-control" id="add1" asp-for="@Model.UserInfo.Address" placeholder="Address">
+                            <span asp-validation-for="@Model.UserInfo.Address" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-12 form-group p_star">
+                            <input class="form-control" id="city" asp-for="@Model.UserInfo.City" placeholder="Town/City">
+                            <span asp-validation-for="@Model.UserInfo.City" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <input class="form-control" id="zip" placeholder="Postcode/ZIP" asp-for="@Model.UserInfo.PostCode">
+                            <span asp-validation-for="@Model.UserInfo.PostCode" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <div class="creat_account">
+                                <h3>Shipping Details</h3>
+                            </div>
+                            <textarea class="form-control" asp-for="@Model.UserInfo.AdditionalInfo" id="message" rows="1" placeholder="Additinal Information"></textarea>
+                            <span asp-validation-for="@Model.UserInfo.AdditionalInfo" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="order_box">
+                            <h2>Your Order</h2>
+                            <ul class="list">
+                                <li><a href="#">Product <span>Total</span></a></li>
+                                @foreach (var product in Model.Products)
+                                {
+                                    <li><a href="#">@product.Name <span class="middle">x @product.Quantity</span> <span class="last">$@product.Price</span></a></li>
+                                }
+                            </ul>
+                            <ul class="list list_2">
+                                <li><a href="#">Subtotal <span>$@Model.Products.Select(p => p.Quantity * p.Price).Sum()</span></a></li>
+                                <li><a href="#">Shipping <span>Free</span></a></li>
+                                <li><a href="#">Total <span>$@Model.Products.Select(p => p.Quantity * p.Price).Sum()</span></a></li>
+                            </ul>
+                            <div class="creat_account">
+                                <input type="checkbox" id="f-option4" asp-for="@Model.IsTermsAccepted"/>
+                                <label for="f-option4">I’ve read and accept the </label>
+                                <a asp-area="" asp-controller="Home" asp-action="Privacy">terms & conditions*</a>
+                            </div>
+                            <button type="submit" class="main_btn">Submit order</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

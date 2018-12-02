@@ -4,14 +4,16 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20181202150516_AddedUserInfoTable")]
+    partial class AddedUserInfoTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -293,12 +295,12 @@ namespace Data.Migrations
                     b.ToTable("Sizes");
 
                     b.HasData(
-                        new { Id = new Guid("9eaea171-6a92-4eab-83c4-5159b402d522"), Name = "S" },
-                        new { Id = new Guid("29335ed5-e814-40ed-aac6-f482fb2be4d6"), Name = "M" },
-                        new { Id = new Guid("60a6c43b-f44e-45c6-97b1-bbea65260c69"), Name = "L" },
-                        new { Id = new Guid("0ea30a93-7da7-4773-95ba-b30b63f03f74"), Name = "XL" },
-                        new { Id = new Guid("a9b23b55-c288-48e1-98e7-5bfb841163ee"), Name = "XS" },
-                        new { Id = new Guid("056b52b4-2959-444e-bb10-bd0213b2f49b"), Name = "XXL" }
+                        new { Id = new Guid("7bf595c8-9b7f-4b19-91d9-a9c162cf14ef"), Name = "S" },
+                        new { Id = new Guid("a15523f1-1e95-4480-91b5-0e3cb6bfb5da"), Name = "M" },
+                        new { Id = new Guid("22855fb5-2f88-417c-86c0-7c99b45bf2d4"), Name = "L" },
+                        new { Id = new Guid("e0d33e2a-43ef-42cc-a6b3-1e25ba910170"), Name = "XL" },
+                        new { Id = new Guid("68ff59f7-85d7-4c39-a8bb-035e50c44c79"), Name = "XS" },
+                        new { Id = new Guid("97bdb8ef-4de1-4a74-9fd6-6447cf913064"), Name = "XXL" }
                     );
                 });
 
@@ -389,9 +391,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserInfos");
                 });
@@ -509,8 +509,8 @@ namespace Data.Migrations
             modelBuilder.Entity("Models.UserInfo", b =>
                 {
                     b.HasOne("Models.User", "User")
-                        .WithOne("UserInfo")
-                        .HasForeignKey("Models.UserInfo", "UserId");
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }

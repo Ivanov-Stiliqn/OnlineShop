@@ -77,30 +77,29 @@
                     <p>@Model.Product.Details</p>
                     @if (Model.Product.Sizes.Any(s => s.Quantity > 0))
                     {
-                        <form class="d-block">
+                        <form class="d-block" asp-area="Profile" asp-controller="Cart" asp-action="Add">
                             <div class="row product_size_row">
                                 <div class="product_size">
                                     <label for="sizeId">Size</label>
-                                    <select name="sizeId" id="sizeId">
+                                    <select name="size" id="size">
                                         @foreach (var size in Model.Product.Sizes)
                                         {
-                                            <option value="@size.Id">@size.Name</option>
+                                            <option value="@size.Name">@size.Name</option>
                                         }
                                     </select>
                                 </div>
                             </div>
                        
                             <div class="product_count">
-                                <label for="qty">Quantity:</label>
-                                <input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:" class="input-text qty">
+                                <label for="sst">Quantity:</label>
+                                <input type="text" name="quantity" id="sst" maxlength="12" value="1" title="Quantity:" class="input-text qty">
                                 <button onclick="var result = document.getElementById('sst');var sst = result.value;if (!isNaN(sst)) result.value++;return false;" class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
                                 <button onclick="var result = document.getElementById('sst'); var sst = result.value; if (!isNaN(sst)  && sst > 0 )result.value--;return false;" class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
                             </div>
-
+                            <input type="hidden" name="productId" value="@Model.Product.Id"/>
                             <div class="card_area">
                                 <button type="submit" class="main_btn">Add to Cart</button>
-                                <a class="icon_btn" href="#"><i class="lnr lnr lnr-diamond"></i></a>
-                                <a class="icon_btn" href="#"><i class="lnr lnr lnr-heart"></i></a>
+                                <a class="icon_btn add-to-whishlist" data-id="@Model.Product.Id"><i class="lnr lnr lnr-heart"></i></a>
                             </div>
                         </form>   
                     }     

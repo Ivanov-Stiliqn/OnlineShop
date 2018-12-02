@@ -1,0 +1,48 @@
+﻿@model WishlistViewModel
+
+<tr>
+    <td>
+        <div class="media">
+            <div class="d-flex">
+                <img width="140" height="100" src="@Model.Image" alt="">
+            </div>
+            <div class="media-body">
+                <p>
+                    <a asp-area="Shopping" asp-controller="Products" asp-action="Details" asp-route-id="@Model.Id">@Model.Name</a>
+                </p>
+            </div>
+        </div>
+    </td>
+    <td>
+        <div class="media">
+            <div class="media-body">
+                
+                    @if (!Model.Sizes.Any())
+                    {
+                        <p>No sizes, available.</p>
+                    }
+                    else
+                    {
+                        <p>@string.Join(", ", Model.Sizes.Select(s => s.Name))</p>
+                    }
+               
+            </div>
+        </div>
+    </td>
+    <td>
+        <div class="media">
+            <div class="media-body">
+                <p>$@Model.Price</p>
+            </div>
+        </div>
+    </td>
+    <td>
+        <div class="media">
+            <div class="media-body">
+                <p>
+                    <a asp-controller="Wishlist" asp-action="Remove" asp-route-productId="@Model.Id" class="btn btn-danger">Remove</a>
+                </p>
+            </div>
+        </div>
+    </td>
+</tr>
