@@ -83,5 +83,31 @@ namespace Services
 
             return this.productsRepository.All().FirstOrDefault(p => p.Id == parsedId);
         }
+
+        public async Task<bool> EditProduct(Product model, string username, ICollection<string> images)
+        {
+            var product = this.productsRepository.All().Include(p => p.Creator).FirstOrDefault(p => p.Id == model.Id);
+            if (product.Creator.UserName != username)
+            {
+                return false;
+            }
+
+            product.Name = model.Name;
+            product.Price = model.Price;
+            product.Color = model.Color;
+            product.CategoryId = model.CategoryId;
+            product.Description = model.Description;
+            product.Details = model.Details;
+
+            var productImages = product.Images.ToList();
+            productImages.AddRange(images);
+            product.ImageUrls = string.Join(", ", productImages);
+
+            product.Sex = model.Sex;
+
+            await this.productsRepository.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

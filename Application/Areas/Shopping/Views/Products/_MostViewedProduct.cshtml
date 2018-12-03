@@ -9,7 +9,7 @@
             </div>
         </div>
         <a asp-area="Shopping" asp-controller="Products" asp-action="Details" asp-route-id="@Model.Id"><h4>@Model.Name</h4></a>
-        <h5>$@Model.Price</h5>
+        <h5>$@Model.Price.ToString("F2", CultureInfo.InvariantCulture)</h5>
     </div>
 </div>
                    

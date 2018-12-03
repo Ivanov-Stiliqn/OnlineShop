@@ -130,5 +130,11 @@ namespace Services
 
             await this.usersRepository.SaveChangesAsync();
         }
+
+        public ICollection<Product> GetUserProducts(string username)
+        {
+            return this.usersRepository.All().Include(u => u.MyProducts).Where(u => u.UserName == username)
+                .Select(u => u.MyProducts).FirstOrDefault();
+        }
     }
 }

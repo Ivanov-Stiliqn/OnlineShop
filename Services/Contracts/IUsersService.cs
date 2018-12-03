@@ -26,5 +26,7 @@ namespace Services.Contracts
         ICollection<Product> GetWishList(string username);
 
         Task RemoveProductFromWishlist(string productId, string username);
+
+        ICollection<Product> GetUserProducts(string username);
     }
 }

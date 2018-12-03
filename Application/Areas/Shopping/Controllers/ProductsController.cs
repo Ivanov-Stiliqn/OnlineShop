@@ -20,17 +20,20 @@ namespace Application.Areas.Shopping.Controllers
         private readonly ICategoriesService categoriesService;
         private readonly IProductsService productsService;
         private readonly IReviewService reviewService;
+        private readonly IUsersService usersService;
 
         public ProductsController(
             Cloudinary cloudinary, 
             ICategoriesService categoriesService, 
             IProductsService productsService,
-            IReviewService reviewService)
+            IReviewService reviewService,
+            IUsersService usersService)
         {
             this.cloudinary = cloudinary;
             this.categoriesService = categoriesService;
             this.productsService = productsService;
             this.reviewService = reviewService;
+            this.usersService = usersService;
         }
 
         public IActionResult Index()
@@ -154,6 +157,96 @@ namespace Application.Areas.Shopping.Controllers
             await this.reviewService.Create(review, this.User.Identity.Name);
 
             return RedirectToAction(nameof(Details), new {id});
+        }
+
+        public IActionResult MyProducts()
+        {
+            var userProducts = this.usersService.GetUserProducts(this.User.Identity.Name);
+            var model = userProducts.Select(p => p.Map<Product, ProductViewModel>()).ToList();
+
+            return View(model);
+        }
+
+        public IActionResult Edit(string id)
+        {
+            var product = this.productsService.GetProductForCart(id);
+            if (product == null)
+            {
+                this.TempData["Error"] = "Product does not exits.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var model = new EditProductPageViewModel
+            {
+                Product = product.Map<Product, EditProductViewModel>(),
+                AllCategories = this.categoriesService.GetCategories()
+                    .Select(c => c.Map<Category, CategoryListItemViewModel>()).ToList()
+            };
+
+            this.TempData["EditedProductId"] = id;
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditProductPageViewModel model, string id)
+        {
+            var check = Guid.TryParse(id, out Guid parsedId);
+            if (!check)
+            {
+                this.TempData["Error"] = "Product does not exits.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var idCheck = this.TempData["EditedProductId"].ToString();
+            if (idCheck != id)
+            {
+                this.TempData["Error"] = "Invalid operation.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.AllCategories = this.categoriesService.GetCategories()
+                    .Select(c => c.Map<Category, CategoryListItemViewModel>())
+                    .ToList();
+
+                this.TempData["EditedProductId"] = id;
+                return View(model);
+            }
+
+            var urls = new List<string>();
+
+            if (model.ImagesFiles != null && model.ImagesFiles.Any())
+            {
+                foreach (var formFile in model.ImagesFiles)
+                {
+                    var uploadParams = new ImageUploadParams
+                    {
+                        File = new FileDescription(formFile.FileName, formFile.OpenReadStream())
+                    };
+
+                    var result = await cloudinary.UploadAsync(uploadParams);
+                    urls.Add(result.Uri.ToString());
+                }
+            }
+
+            var product = model.Product.Map<EditProductViewModel, Product>();
+            product.Id = parsedId;
+
+            var isSuccess = await this.productsService.EditProduct(product, this.User.Identity.Name, urls);
+            if (!isSuccess)
+            {
+                this.TempData["Error"] = "Invalid operation.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            this.TempData["Success"] = $"Product {product.Name} edited successfully.";
+            return RedirectToAction(nameof(MyProducts));
+        }
+
+        public IActionResult Delete(string id)
+        {
+            return null;
         }
     }
 }

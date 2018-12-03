@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Infrastructure.Extensions;
+using Application.Infrastructure.Helpers;
 using Application.Infrastructure.Mapping;
 using Application.Infrastructure.Middlewares;
 using Application.Models;
@@ -57,7 +58,10 @@ namespace Application
 
             services.AddScoped(typeof(IRepository<>), typeof(DbRepository<>));
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(config =>
+            {
+                config.ModelBinderProviders.Insert(0, new InvariantDecimalModelBinderProvider());
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSession();
         }
 

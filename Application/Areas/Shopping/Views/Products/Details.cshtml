@@ -1,6 +1,4 @@
-﻿@using System.Drawing
-@using System.Globalization
-@model ProductDetailsPageViewModel
+﻿@model ProductDetailsPageViewModel
 <!--================Home Banner Area =================-->
 <section class="banner_area">
     <div class="banner_inner d-flex align-items-center">
@@ -57,7 +55,7 @@
             <div class="col-lg-5 offset-lg-1">
                 <div class="s_product_text">
                     <h3>@Model.Product.Name</h3>
-                    <h2>$@Model.Product.Price</h2>
+                    <h2>$@Model.Product.Price.ToString("F2", CultureInfo.InvariantCulture)</h2>
                     <ul class="list">
                         <li>
                             <a href="#">

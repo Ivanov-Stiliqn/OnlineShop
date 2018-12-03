@@ -1,17 +1,17 @@
-﻿@model CreateProductViewModel
+﻿@model EditProductPageViewModel
 
 @{
-    ViewData["Title"] = "Create Product";
+    ViewData["Title"] = "Edit Product";
 }
 
 <section class="banner_area">
     <div class="banner_inner d-flex align-items-center">
         <div class="container">
             <div class="banner_content text-center">
-                <h2>Create Product</h2>
+                <h2>Edit Product</h2>
                 <div class="page_link">
                     <a asp-controller="Home" asp-action="Index">Home</a>
-                    <a asp-controller="Products" asp-action="Create">Create Product</a>
+                    <a asp-controller="Products" asp-action="Edit" asp-route-id="@Model.Product.Id">Edit Product</a>
                 </div>
             </div>
         </div>
@@ -26,53 +26,51 @@
                     <form method="post" enctype="multipart/form-data" class="row login_form">
                         <div asp-validation-summary="All" class="text-danger"></div>
                         <div class="col-md-12 form-group">
-                            <label asp-for="@Model.Price"></label>
-                            <input class="form-control" asp-for="@Model.Price" asp-is-invariant="true" placeholder="Price...">
-                            <span asp-validation-for="@Model.Price" class="text-danger"></span>
+                            <label>Price</label>
+                            <input class="form-control" asp-for="@Model.Product.Price" asp-is-invariant="true" placeholder="Price...">
+                            <span asp-validation-for="@Model.Product.Price" class="text-danger"></span>
                         </div>
                         <div class="col-md-12 form-group">
-                            <input class="form-control" asp-for="@Model.Name" placeholder="Name...">
-                            <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                            <input class="form-control" asp-for="@Model.Product.Name" placeholder="Name...">
+                            <span asp-validation-for="@Model.Product.Name" class="text-danger"></span>
                         </div>
                         <div class="col-md-12 form-group">
-                            <input class="form-control" asp-for="@Model.Color" placeholder="Color..." />
-                            <span asp-validation-for="@Model.Color" class="text-danger"></span>
+                            <input class="form-control" asp-for="@Model.Product.Color" placeholder="Color..." />
+                            <span asp-validation-for="@Model.Product.Color" class="text-danger"></span>
                         </div>
                         <div class="col-md-12 form-group">
-                            <select class="form-control" asp-for="@Model.Sex">
-                                <option disabled selected>Sex</option>
+                            <select class="form-control" asp-for="@Model.Product.Sex" value="@Model.Product.Sex">
                                 <option value="1">Men</option>
                                 <option value="2">Women</option>
                                 <option value="3">Kids</option>
                             </select>
-                            <span asp-validation-for="@Model.Sex" class="text-danger"></span>
+                            <span asp-validation-for="@Model.Product.Sex" class="text-danger"></span>
                         </div>
                         <div class="col-md-12 form-group">
-                            <select class="form-control" asp-for="@Model.CategoryId">
-                                <option disabled selected>Category</option>
+                            <select class="form-control" asp-for="@Model.Product.CategoryId" value="@Model.Product.CategoryId">
                                 @foreach (var category in Model.AllCategories)
                                 {
                                     <option class="form-control" value="@category.Id">@category.Name</option>
                                 }
                             </select>
-                            <span asp-validation-for="@Model.CategoryId" class="text-danger"></span>
+                            <span asp-validation-for="@Model.Product.CategoryId" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-12 form-group">
-                            <textarea class="form-control" asp-for="@Model.Description" placeholder="Description..."></textarea>
-                            <span asp-validation-for="@Model.Description" class="text-danger"></span>
+                            <textarea class="form-control" asp-for="@Model.Product.Description" placeholder="Description..."></textarea>
+                            <span asp-validation-for="@Model.Product.Description" class="text-danger"></span>
                         </div>
                         <div class="col-md-12 form-group">
-                            <textarea class="form-control" asp-for="@Model.Details" placeholder="Details..."></textarea>
-                            <span asp-validation-for="@Model.Details" class="text-danger"></span>
+                            <textarea class="form-control" asp-for="@Model.Product.Details" placeholder="Details..."></textarea>
+                            <span asp-validation-for="@Model.Product.Details" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-12 form-group">
                             <input asp-for="@Model.ImagesFiles" class="form-control-file" style="height: 35px!important" multiple>
-                            <small id="fileHelp" class="form-text text-muted">Choose images for your product to be uploaded.</small>
+                            <small id="fileHelp" class="form-text text-muted">Choose images to be added to your product images.</small>
                         </div>
                         <div class="col-md-12 form-group mt-3 mb-3">
-                            <button type="submit" value="submit" class="btn submit_btn">Create</button>
+                            <button type="submit" value="submit" class="btn submit_btn">Edit</button>
                         </div>
                     </form>
 

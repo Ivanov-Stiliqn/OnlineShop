@@ -7,7 +7,7 @@
                 </div>
                 <div class="media-body">
                     <a asp-area="Shopping" asp-controller="Products" asp-action="Details" asp-route-id="@Model.Id"><h4>@Model.Name</h4></a>
-                    <h3>$@Model.Price</h3>
+                    <h3>$@Model.Price.ToString("F2", CultureInfo.InvariantCulture)</h3>
                 </div>
             </div>    
     </div>
