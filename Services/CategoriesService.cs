@@ -77,5 +77,50 @@ namespace Services
             await this.categoryRepository.SaveChangesAsync();
             return products.Skip(skip).Take(take).ToList();
         }
+
+        public Category GetCategory(string id)
+        {
+            var check = Guid.TryParse(id, out Guid parsedId);
+            if (!check)
+            {
+                return null;
+            }
+
+            return this.categoryRepository.All().FirstOrDefault(c => c.Id == parsedId);
+        }
+
+        public async Task EditCategory(Category category)
+        {
+            var categoryFromDb = this.categoryRepository.All().FirstOrDefault(c => c.Id == category.Id);
+            categoryFromDb.Name = category.Name;
+
+            if (!string.IsNullOrEmpty(category.Image))
+            {
+                categoryFromDb.Image = category.Image;
+            }
+
+            this.categoryRepository.Update(categoryFromDb);
+            await this.categoryRepository.SaveChangesAsync();
+        }
+
+        public async Task<bool> DeleteCategory(string id)
+        {
+            var check = Guid.TryParse(id, out Guid parsedId);
+            if (!check)
+            {
+                return false;
+            }
+
+            var category = this.categoryRepository.All().FirstOrDefault(c => c.Id == parsedId);
+            if (category == null)
+            {
+                return false;
+            }
+
+            this.categoryRepository.Delete(category);
+            await this.categoryRepository.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

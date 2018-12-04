@@ -98,6 +98,10 @@
                             <div class="card_area">
                                 <button type="submit" class="main_btn">Add to Cart</button>
                                 <a class="icon_btn add-to-whishlist" data-id="@Model.Product.Id"><i class="lnr lnr lnr-heart"></i></a>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a asp-area="Shopping" asp-controller="Products" asp-action="Delete" asp-route-id="@Model.Product.Id" asp-route-isHome="true" class="icon_btn confirm-delete"><i class="lnr lnr-cross"></i></a>
+                                }
                             </div>
                         </form>   
                     }     

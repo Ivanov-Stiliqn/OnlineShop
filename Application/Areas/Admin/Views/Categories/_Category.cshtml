@@ -1,0 +1,13 @@
+﻿@model CategoryViewModel
+<div class="col-lg-3 col-md-4 col-sm-6">
+    <div class="f_p_item">
+        <div class="f_p_img">
+            <img class="img-fluid" src="@Model.Image" alt="">
+            <div class="p_icon">
+                <a asp-controller="Categories" asp-action="Edit" asp-route-id="@Model.Id"><i class="lnr lnr-pencil"></i></a>
+                <a asp-controller="Categories" asp-action="Delete" asp-route-id="@Model.Id" class="confirm-delete"><i class="lnr lnr-cross"></i></a>
+            </div>
+        </div>
+        <a><h4>@Model.Name</h4></a>
+    </div>
+</div>

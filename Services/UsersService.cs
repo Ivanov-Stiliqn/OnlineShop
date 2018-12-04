@@ -111,7 +111,7 @@ namespace Services
         public ICollection<Product> GetWishList(string username)
         {
             var user = this.usersRepository.All().FirstOrDefault(u => u.UserName == username);
-            var wishlist = user.Whishlist.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var wishlist = user.Whishlist != null ? user.Whishlist.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList() : new List<string>();
 
             return this.productsRepository
                 .All()
@@ -124,7 +124,7 @@ namespace Services
         public async Task RemoveProductFromWishlist(string productId, string username)
         {
             var user = this.usersRepository.All().FirstOrDefault(u => u.UserName == username);
-            var wishlist = user.Whishlist.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var wishlist = user.Whishlist != null ? user.Whishlist.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList() : new List<string>();
 
             user.Whishlist = string.Join(", ", wishlist.Where(p => p != productId));
 

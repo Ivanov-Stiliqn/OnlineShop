@@ -1,0 +1,50 @@
+﻿@model EditCategoryPageViewModel
+
+@{
+    ViewData["Title"] = "Create Category";
+}
+
+<section class="banner_area">
+    <div class="banner_inner d-flex align-items-center">
+        <div class="container">
+            <div class="banner_content text-center">
+                <h2>Edit Category</h2>
+                <div class="page_link">
+                    <a asp-controller="Home" asp-action="Index">Home</a>
+                    <a asp-controller="Categories" asp-action="Edit" asp-route-id="@Model.Category.Id">Edit Category</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="login_box_area p_120">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="login_form_inner">
+                    <h3>Please fill out the form.</h3>
+                    <form class="row login_form" method="post" id="contactForm" enctype="multipart/form-data">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <input type="hidden" asp-for="@Model.Category.Id">
+                        <div class="col-md-12 form-group">
+                            <label asp-for="@Model.Category.Name"></label>
+                            <input class="form-control" asp-for="@Model.Category.Name" placeholder="Name">
+                            <span asp-validation-for="@Model.Category.Name" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <input asp-for="@Model.ImageFile" class="form-control-file" style="height: 35px!important">
+                            <small id="fileHelp" class="form-text text-muted">Change category image.</small>
+                        </div>
+                        <div class="col-md-12 form-group mt-3">
+                            <button type="submit" value="submit" class="btn submit_btn">Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

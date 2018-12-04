@@ -25,5 +25,7 @@ namespace Services.Contracts
         Product GetProductForCart(string id);
 
         Task<bool> EditProduct(Product model, string username, ICollection<string> images);
+
+        Task<bool> DeleteProduct(string productId, string username);
     }
 }

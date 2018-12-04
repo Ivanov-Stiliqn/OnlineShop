@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Data;
 using Data.Repositories.Contracts;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.Enums;
@@ -16,13 +17,16 @@ namespace Services
     {
         private readonly IRepository<Product> productsRepository;
         private readonly IRepository<User> usersRepository;
+        private readonly UserManager<User> manager;
 
         public ProductsService(
             IRepository<Product> productsRepository, 
-            IRepository<User> usersRepository)
+            IRepository<User> usersRepository,
+            UserManager<User> manager)
         {
             this.productsRepository = productsRepository;
             this.usersRepository = usersRepository;
+            this.manager = manager;
         }
 
         public async Task CreateProduct(Product product, string username)
@@ -107,6 +111,27 @@ namespace Services
 
             await this.productsRepository.SaveChangesAsync();
 
+            return true;
+        }
+
+        public async Task<bool> DeleteProduct(string productId, string username)
+        {
+            var check = Guid.TryParse(productId, out Guid parsedProductId);
+            if (!check)
+            {
+                return false;
+            }
+
+            var user = this.usersRepository.All().FirstOrDefault(u => u.UserName == username);
+            var isAdmin = await this.manager.IsInRoleAsync(user, "Admin");
+            var product = this.productsRepository.All().Include(p => p.Creator).FirstOrDefault(p => p.Id == parsedProductId);
+            if (product == null || user.UserName != product.Creator.UserName && !isAdmin)
+            {
+                return false;
+            }
+
+            this.productsRepository.Delete(product);
+            await this.productsRepository.SaveChangesAsync();
             return true;
         }
     }

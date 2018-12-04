@@ -18,6 +18,12 @@ namespace Services.Contracts
 
         ICollection<Category> GetTopCategories();
 
+        Category GetCategory(string id);
+
+        Task EditCategory(Category category);
+
+        Task<bool> DeleteCategory(string id);
+
         Task<ICollection<Product>> GetProductsByCategory(
             Guid categoryId, 
             int skip, 

@@ -78,7 +78,8 @@ namespace Application.Areas.Shopping.Controllers
             {
                 var uploadParams = new ImageUploadParams
                 {
-                    File = new FileDescription(formFile.FileName, formFile.OpenReadStream())
+                    File = new FileDescription(formFile.FileName, formFile.OpenReadStream()),
+                    Transformation = new Transformation().Width(262).Height(262).Crop("scale")
                 };
 
                 var result = await cloudinary.UploadAsync(uploadParams);
@@ -222,7 +223,8 @@ namespace Application.Areas.Shopping.Controllers
                 {
                     var uploadParams = new ImageUploadParams
                     {
-                        File = new FileDescription(formFile.FileName, formFile.OpenReadStream())
+                        File = new FileDescription(formFile.FileName, formFile.OpenReadStream()),
+                        Transformation = new Transformation().Width(262).Height(262).Crop("scale")
                     };
 
                     var result = await cloudinary.UploadAsync(uploadParams);
@@ -244,9 +246,12 @@ namespace Application.Areas.Shopping.Controllers
             return RedirectToAction(nameof(MyProducts));
         }
 
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> Delete(string id, bool isHome)
         {
-            return null;
+            await this.productsService.DeleteProduct(id, this.User.Identity.Name);
+
+            this.TempData["Success"] = "Product removed successfully.";
+            return RedirectToAction(isHome ? nameof(Index) : nameof(MyProducts));
         }
     }
 }

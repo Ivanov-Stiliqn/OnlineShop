@@ -1,0 +1,38 @@
+﻿@model ICollection<CategoryViewModel>
+
+<section class="banner_area">
+    <div class="banner_inner d-flex align-items-center">
+        <div class="container">
+            <div class="banner_content text-center">
+                <h2>All Categories</h2>
+                <div class="page_link">
+                    <a asp-area="Shopping" asp-controller="Products" asp-action="Index">Home</a>
+                    <a asp-controller="Categories" asp-action="Index">All Categories</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================End Home Banner Area =================-->
+<!--================Category Product Area =================-->
+<section class="cat_product_area p_120">
+    <div class="container">
+        <div class="row flex-row-reverse">
+            <div class="col-lg-12">
+                @if (!Model.Any())
+                {
+                    <h1 class="text-center">No categories found.</h1>
+                }
+                else
+                {
+                    <div class="latest_product_inner row">
+                        @foreach (var item in Model)
+                        {
+                            <partial name="_Category" model="@item" />
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

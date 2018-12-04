@@ -1,12 +1,11 @@
-﻿@using System.Globalization
-@model ProductViewModel
+﻿@model ProductViewModel
 <div class="col-lg-3 col-md-4 col-sm-6">
     <div class="f_p_item">
         <div class="f_p_img">
             <img class="img-fluid" src="@Model.Image" alt="">
             <div class="p_icon">
                 <a asp-area="Shopping" asp-controller="Products" asp-action="Edit" asp-route-id="@Model.Id"><i class="lnr lnr-pencil"></i></a>
-                <a asp-area="Shopping" asp-controller="Products" asp-action="Delete" asp-route-id="@Model.Id"><i class="lnr lnr-cross"></i></a>
+                <a asp-area="Shopping" asp-controller="Products" asp-action="Delete" asp-route-id="@Model.Id" class="confirm-delete"><i class="lnr lnr-cross"></i></a>
             </div>
         </div>
         <a asp-area="Shopping" asp-controller="Products" asp-action="Details" asp-route-id="@Model.Id"><h4>@Model.Name</h4></a>
