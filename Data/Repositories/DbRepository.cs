@@ -30,6 +30,11 @@ namespace Data.Repositories
             await this.dbSet.AddAsync(entity);
         }
 
+        public async Task AddRangeAsync(IEnumerable<TEntity> entities)
+        {
+            await this.dbSet.AddRangeAsync(entities);
+        }
+
         public void Update(TEntity entity)
         {
             this.dbSet.Update(entity);

@@ -160,17 +160,19 @@ namespace Data.Migrations
 
                     b.Property<Guid>("ProductId");
 
+                    b.Property<string>("ProductImage");
+
+                    b.Property<string>("ProductName");
+
                     b.Property<int>("Quantity");
 
-                    b.Property<Guid>("SizeId");
+                    b.Property<string>("Size");
 
                     b.Property<string>("UserId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("SizeId");
 
                     b.HasIndex("UserId");
 
@@ -293,12 +295,12 @@ namespace Data.Migrations
                     b.ToTable("Sizes");
 
                     b.HasData(
-                        new { Id = new Guid("9eaea171-6a92-4eab-83c4-5159b402d522"), Name = "S" },
-                        new { Id = new Guid("29335ed5-e814-40ed-aac6-f482fb2be4d6"), Name = "M" },
-                        new { Id = new Guid("60a6c43b-f44e-45c6-97b1-bbea65260c69"), Name = "L" },
-                        new { Id = new Guid("0ea30a93-7da7-4773-95ba-b30b63f03f74"), Name = "XL" },
-                        new { Id = new Guid("a9b23b55-c288-48e1-98e7-5bfb841163ee"), Name = "XS" },
-                        new { Id = new Guid("056b52b4-2959-444e-bb10-bd0213b2f49b"), Name = "XXL" }
+                        new { Id = new Guid("decfabc1-9889-4f3e-83d7-546157a944d8"), Name = "S" },
+                        new { Id = new Guid("8ba4ee21-6528-4d8b-a7fc-245dd17fa1e2"), Name = "M" },
+                        new { Id = new Guid("f4ff0789-4cec-4154-9573-77cd51151baf"), Name = "L" },
+                        new { Id = new Guid("94c6c2c7-d5dc-4c3a-839e-2c1a7effcb5d"), Name = "XL" },
+                        new { Id = new Guid("38270b05-de55-4933-ad42-544959c7659c"), Name = "XS" },
+                        new { Id = new Guid("1b59c529-91cb-4162-ba63-ea31185fbcdb"), Name = "XXL" }
                     );
                 });
 
@@ -446,11 +448,6 @@ namespace Data.Migrations
                     b.HasOne("Models.Product", "Product")
                         .WithMany("Orders")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Models.Size", "Size")
-                        .WithMany("Orders")
-                        .HasForeignKey("SizeId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Models.User", "User")

@@ -6,6 +6,7 @@ using Application.Areas.Profile.Models;
 using Application.Areas.Shopping.Controllers;
 using Application.Infrastructure.Helpers;
 using Application.Infrastructure.Mapping;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using Services.Contracts;
@@ -16,11 +17,16 @@ namespace Application.Areas.Profile.Controllers
     {
         private readonly IProductsService productsService;
         private readonly IUsersService usersService;
+        private readonly IOrdersService ordersService;
 
-        public CartController(IProductsService productsService, IUsersService usersService)
+        public CartController(
+            IProductsService productsService, 
+            IUsersService usersService, 
+            IOrdersService ordersService)
         {
             this.productsService = productsService;
             this.usersService = usersService;
+            this.ordersService = ordersService;
         }
 
         public IActionResult Index()
@@ -95,9 +101,15 @@ namespace Application.Areas.Profile.Controllers
         [HttpPost]
         public async Task<IActionResult> Checkout(CheckoutPageViewModel model)
         {
+            var cart = HttpContext.Session.GetObjectFromJson<List<CartViewModel>>(this.User.Identity.Name) ?? new List<CartViewModel>();
+            if (!cart.Any())
+            {
+                this.TempData["Error"] = "Invalid operation.";
+                return RedirectToAction(nameof(ProductsController.Index), "Products", new {area = "Shopping"});
+            }
+
             if (!ModelState.IsValid)
             {
-                var cart = HttpContext.Session.GetObjectFromJson<List<CartViewModel>>(this.User.Identity.Name) ?? new List<CartViewModel>();
                 model.Products = cart;
 
                 return View(model);
@@ -106,7 +118,6 @@ namespace Application.Areas.Profile.Controllers
             if (!model.IsTermsAccepted)
             {
                 ModelState.AddModelError("All", "Terms should be accepted.");
-                var cart = HttpContext.Session.GetObjectFromJson<List<CartViewModel>>(this.User.Identity.Name) ?? new List<CartViewModel>();
                 model.Products = cart;
 
                 return View(model);
@@ -127,9 +138,31 @@ namespace Application.Areas.Profile.Controllers
 
             await this.usersService.UpdateUserInfo(userInfo, this.User.Identity.Name);
 
-            return RedirectToAction(nameof(Checkout));
+            var orders = new List<Order>();
+            foreach (var product in cart)
+            {
+                orders.Add(new Order
+                {
+                    ProductId = product.Id,
+                    ProductName = product.Name,
+                    ProductImage = product.Image,
+                    Size = product.Size,
+                    Quantity = product.Quantity
+                });
+            }
 
-            //submit the order
+            try
+            {
+                await this.ordersService.CreateOrders(orders, this.User.Identity.Name);
+                HttpContext.Session.SetObjectAsJson(this.User.Identity.Name, new List<CartViewModel>());
+                this.TempData["Success"] = "Orders submitted, please wait for confirmation.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidOperationException e)
+            {
+                this.TempData["Error"] = e.Message;
+                return RedirectToAction(nameof(Checkout));
+            }
         }
     }
 }

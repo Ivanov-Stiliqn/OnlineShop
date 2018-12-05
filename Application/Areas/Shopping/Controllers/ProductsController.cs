@@ -157,6 +157,7 @@ namespace Application.Areas.Shopping.Controllers
 
             await this.reviewService.Create(review, this.User.Identity.Name);
 
+            this.TempData["Success"] = "Review added.";
             return RedirectToAction(nameof(Details), new {id});
         }
 

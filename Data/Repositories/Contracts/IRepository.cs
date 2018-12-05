@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Data.Repositories.Contracts
@@ -8,6 +9,8 @@ namespace Data.Repositories.Contracts
         IQueryable<TEntity> All();
 
         Task AddAsync(TEntity entity);
+
+        Task AddRangeAsync(IEnumerable<TEntity> entities);
 
         void Update(TEntity entity);
 

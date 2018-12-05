@@ -26,9 +26,11 @@ namespace Models
 
         public Product Product { get; set; }
 
-        public Guid SizeId { get; set; }
+        public string ProductImage { get; set; }
 
-        public Size Size { get; set; }
+        public string ProductName { get; set; }
+
+        public string Size { get; set; }
 
         public int Quantity { get; set; }
     }

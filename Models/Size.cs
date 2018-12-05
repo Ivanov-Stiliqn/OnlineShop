@@ -11,7 +11,6 @@ namespace Models
         public Size()
         {
             this.Products = new List<ProductSize>();
-            this.Orders = new List<Order>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -22,7 +21,5 @@ namespace Models
         public string Name { get; set; }
 
         public ICollection<ProductSize> Products { get; set; }
-
-        public ICollection<Order> Orders { get; set; }
     }
 }
