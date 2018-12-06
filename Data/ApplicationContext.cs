@@ -36,6 +36,13 @@ namespace Data
 
             builder.Entity<User>().HasOne(u => u.UserInfo).WithOne(u => u.User).HasForeignKey<UserInfo>(u => u.UserId);
 
+            builder.Entity<User>().HasMany(u => u.PurchaseOrders).WithOne(o => o.Buyer).HasForeignKey(u => u.BuyerId);
+
+            builder.Entity<User>().HasMany(u => u.SellOrders).WithOne(o => o.Seller).HasForeignKey(u => u.SellerId);
+
+            builder.Entity<Product>().HasMany(p => p.Orders).WithOne(o => o.Product).HasForeignKey(o => o.ProductId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             builder.Entity<ProductSize>().HasOne(ps => ps.Product).WithMany(p => p.Sizes)
                 .HasForeignKey(ps => ps.ProductId);
 

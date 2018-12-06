@@ -27,7 +27,7 @@ namespace Services
         public ICollection<User> AllUsers(string currentUser)
         {
             return this.usersRepository.All()
-                .Include(u => u.Orders)
+                .Include(u => u.PurchaseOrders)
                 .Include(u => u.Reports)
                 .Include(u => u.MyProducts)
                 .Where(u => u.UserName != currentUser)
@@ -37,7 +37,7 @@ namespace Services
         public ICollection<User> SearchByName(string search, string currentUser)
         {
             return this.usersRepository.All()
-                .Include(u => u.Orders)
+                .Include(u => u.PurchaseOrders)
                 .Include(u => u.Reports)
                 .Include(u => u.MyProducts)
                 .Where(u => u.UserName == search.ToLower() &&

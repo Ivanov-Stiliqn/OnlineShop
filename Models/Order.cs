@@ -14,17 +14,21 @@ namespace Models
 
         public DateTime DateOfCreation { get; set; } = DateTime.Now;
 
-        public string UserId { get; set; }
+        public string BuyerId { get; set; }
 
-        public User User { get; set; }
+        public User Buyer { get; set; }
+
+        public string SellerId { get; set; }
+
+        public User Seller { get; set; }
 
         public bool IsAccepted { get; set; }
 
         public bool IsDelivered { get; set; }
 
-        public Guid ProductId { get; set; }
+        public Guid? ProductId { get; set; }
 
-        public Product Product { get; set; }
+        public virtual Product Product { get; set; }
 
         public string ProductImage { get; set; }
 

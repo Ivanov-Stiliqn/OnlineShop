@@ -12,7 +12,7 @@ using Services.Contracts;
 
 namespace Services
 {
-    public class OrdersService: IOrdersService
+    public class OrdersService : IOrdersService
     {
         private readonly IRepository<Order> ordersRepository;
         private readonly IRepository<ProductSize> productSizeRepository;
@@ -48,12 +48,14 @@ namespace Services
                     throw new InvalidOperationException("You cannot order your own product.");
                 }
 
-                order.UserId = user.Id;
+                order.BuyerId = user.Id;
+                order.SellerId = product.CreatorId;
 
                 var productSize = product.Sizes.FirstOrDefault(ps => ps.Size.Name == order.Size);
                 if (productSize.Quantity < order.Quantity)
                 {
-                    throw new InvalidOperationException("Sorry you are too late, current product size is out of stock.");
+                    throw new InvalidOperationException(
+                        "Sorry you are too late, current product size is out of stock.");
                 }
             }
 
@@ -61,15 +63,78 @@ namespace Services
             await this.ordersRepository.SaveChangesAsync();
         }
 
-        public ICollection<Order> GetPendingOrders(string username)
+        public ICollection<Order> GetSellOrders(string username)
         {
             var user = this.usersRepository
                 .All()
-                .Include(u => u.MyProducts)
-                .ThenInclude(p => p.Orders)
+                .Include(p => p.SellOrders)
+                    .ThenInclude(o => o.Product)
+                .Include(p => p.SellOrders)
+                    .ThenInclude(o => o.Buyer)
                 .FirstOrDefault(u => u.UserName == username);
 
-           return user.MyProducts.SelectMany(p => p.Orders).Where(o => !o.IsAccepted).ToList();
+            return user.SellOrders.ToList();
+        }
+
+        public async Task<bool> AcceptOrder(string id, string username)
+        {
+            var check = Guid.TryParse(id, out Guid parsedid);
+            if (!check)
+            {
+                return false;
+            }
+
+            var order = this.ordersRepository.All().Include(o => o.Seller).FirstOrDefault(o => o.Id == parsedid);
+            if (order == null)
+            {
+                return false;
+            }
+
+            if (order.Seller.UserName != username)
+            {
+                return false;
+            }
+
+            order.IsAccepted = true;
+            await this.ordersRepository.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ReceiveOrder(string id, string username)
+        {
+            var check = Guid.TryParse(id, out Guid parsedid);
+            if (!check)
+            {
+                return false;
+            }
+
+            var order = this.ordersRepository.All().Include(o => o.Buyer).FirstOrDefault(o => o.Id == parsedid);
+            if (order == null)
+            {
+                return false;
+            }
+
+            if (order.Buyer.UserName != username || !order.IsAccepted)
+            {
+                return false;
+            }
+
+            order.IsDelivered = true;
+            await this.ordersRepository.SaveChangesAsync();
+            return true;
+        }
+
+        public ICollection<Order> GetPurchaseOrders(string username)
+        {
+            var user = this.usersRepository
+                .All()
+                .Include(p => p.PurchaseOrders)
+                .ThenInclude(o => o.Product)
+                .Include(p => p.PurchaseOrders)
+                .ThenInclude(o => o.Seller)
+                .FirstOrDefault(u => u.UserName == username);
+
+            return user.PurchaseOrders.Where(o => o.IsAccepted).ToList();
         }
     }
 }

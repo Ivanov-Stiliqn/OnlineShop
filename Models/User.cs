@@ -13,7 +13,8 @@ namespace Models
             this.Reports = new List<Report>();
             this.ReportsGiven = new List<Report>();
             this.Reviews = new List<Review>();
-            this.Orders = new List<Order>();
+            this.PurchaseOrders = new List<Order>();
+            this.SellOrders = new List<Order>();
         }
 
         public ICollection<Product> MyProducts { get; set; }
@@ -30,6 +31,8 @@ namespace Models
 
         public ICollection<Review> Reviews { get; set; }
 
-        public ICollection<Order> Orders { get; set; }
+        public ICollection<Order> PurchaseOrders { get; set; }
+
+        public ICollection<Order> SellOrders { get; set; }
     }
 }

@@ -152,13 +152,15 @@ namespace Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("BuyerId");
+
                     b.Property<DateTime>("DateOfCreation");
 
                     b.Property<bool>("IsAccepted");
 
                     b.Property<bool>("IsDelivered");
 
-                    b.Property<Guid>("ProductId");
+                    b.Property<Guid?>("ProductId");
 
                     b.Property<string>("ProductImage");
 
@@ -166,15 +168,17 @@ namespace Data.Migrations
 
                     b.Property<int>("Quantity");
 
-                    b.Property<string>("Size");
+                    b.Property<string>("SellerId");
 
-                    b.Property<string>("UserId");
+                    b.Property<string>("Size");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BuyerId");
+
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("SellerId");
 
                     b.ToTable("Orders");
                 });
@@ -295,12 +299,12 @@ namespace Data.Migrations
                     b.ToTable("Sizes");
 
                     b.HasData(
-                        new { Id = new Guid("decfabc1-9889-4f3e-83d7-546157a944d8"), Name = "S" },
-                        new { Id = new Guid("8ba4ee21-6528-4d8b-a7fc-245dd17fa1e2"), Name = "M" },
-                        new { Id = new Guid("f4ff0789-4cec-4154-9573-77cd51151baf"), Name = "L" },
-                        new { Id = new Guid("94c6c2c7-d5dc-4c3a-839e-2c1a7effcb5d"), Name = "XL" },
-                        new { Id = new Guid("38270b05-de55-4933-ad42-544959c7659c"), Name = "XS" },
-                        new { Id = new Guid("1b59c529-91cb-4162-ba63-ea31185fbcdb"), Name = "XXL" }
+                        new { Id = new Guid("1a27ad17-ab89-42a5-bbc1-88672ed4d49f"), Name = "S" },
+                        new { Id = new Guid("439adda7-6c19-4c8b-943e-13cfffcae93e"), Name = "M" },
+                        new { Id = new Guid("8ef75493-0d49-4dbf-9297-9d4936b2af83"), Name = "L" },
+                        new { Id = new Guid("3485d6ee-ffd0-42ab-bc8b-26d524dcb5a1"), Name = "XL" },
+                        new { Id = new Guid("569dc60e-52d7-461b-b691-ccf1c0865b5d"), Name = "XS" },
+                        new { Id = new Guid("8eccfd25-67f6-467d-adab-41df5ca4d228"), Name = "XXL" }
                     );
                 });
 
@@ -445,14 +449,18 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Models.Order", b =>
                 {
+                    b.HasOne("Models.User", "Buyer")
+                        .WithMany("PurchaseOrders")
+                        .HasForeignKey("BuyerId");
+
                     b.HasOne("Models.Product", "Product")
                         .WithMany("Orders")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Models.User", "User")
-                        .WithMany("Orders")
-                        .HasForeignKey("UserId");
+                    b.HasOne("Models.User", "Seller")
+                        .WithMany("SellOrders")
+                        .HasForeignKey("SellerId");
                 });
 
             modelBuilder.Entity("Models.Product", b =>

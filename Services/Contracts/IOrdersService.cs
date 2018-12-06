@@ -10,6 +10,12 @@ namespace Services.Contracts
     {
         Task CreateOrders(ICollection<Order> orders, string username);
 
-        ICollection<Order> GetPendingOrders(string username);
+        ICollection<Order> GetSellOrders(string username);
+
+        ICollection<Order> GetPurchaseOrders(string username);
+
+        Task<bool> ReceiveOrder(string id, string username);
+
+        Task<bool> AcceptOrder(string id, string username);
     }
 }

@@ -25,7 +25,7 @@ namespace Application.Areas.Admin.Models
 
         public void ConfigureMapping(AutoMapper.Profile profile)
             => profile.CreateMap<User, UserViewModel>()
-                .ForMember(u => u.Orders, cfg => cfg.MapFrom(u => u.Orders.Count))
+                .ForMember(u => u.Orders, cfg => cfg.MapFrom(u => u.PurchaseOrders.Count))
                 .ForMember(u => u.Products, cfg => cfg.MapFrom(u => u.MyProducts.Count))
                 .ForMember(u => u.Reports, cfg => cfg.MapFrom(u => u.Reports.Count));
     }
