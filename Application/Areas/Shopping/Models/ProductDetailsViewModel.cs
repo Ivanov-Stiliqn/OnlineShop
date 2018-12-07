@@ -30,6 +30,8 @@ namespace Application.Areas.Shopping.Models
 
         public Guid CategoryId { get; set; }
 
+        public string Creator { get; set; }
+
         public ICollection<ReviewViewModel> Reviews { get; set; }
 
         public decimal Rating => this.Reviews.Count > 0

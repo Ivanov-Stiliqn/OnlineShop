@@ -61,6 +61,7 @@ namespace Services
         public async Task<Product> GetProduct(Guid id)
         {
             var product = this.productsRepository.All()
+                .Include(p => p.Creator)
                 .Include(p => p.Orders)
                 .Include(p => p.Reviews)
                     .ThenInclude(r => r.User)

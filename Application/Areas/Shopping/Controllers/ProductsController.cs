@@ -190,7 +190,7 @@ namespace Application.Areas.Shopping.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(EditProductPageViewModel model, string id)
+        public async Task<IActionResult> Edit(EditProductPageViewModel model, string id, string submit)
         {
             var check = Guid.TryParse(id, out Guid parsedId);
             if (!check)
@@ -244,7 +244,12 @@ namespace Application.Areas.Shopping.Controllers
             }
 
             this.TempData["Success"] = $"Product {product.Name} edited successfully.";
-            return RedirectToAction(nameof(MyProducts));
+            if (!string.IsNullOrEmpty(submit))
+            {
+                return RedirectToAction(nameof(MyProducts));
+            }
+
+            return RedirectToAction(nameof(SizesController.Create), "Sizes", new {productId = product.Id});
         }
 
         public async Task<IActionResult> Delete(string id, bool isHome)

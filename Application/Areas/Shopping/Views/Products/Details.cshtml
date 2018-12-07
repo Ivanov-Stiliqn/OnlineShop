@@ -71,40 +71,51 @@
                             </a>
                         </li>
 
-                            </ul>
+                    </ul>
                     <p>@Model.Product.Details</p>
-                    @if (Model.Product.Sizes.Any(s => s.Quantity > 0))
+                    @if (User.Identity.Name != Model.Product.Creator)
                     {
-                        <form class="d-block" asp-area="Profile" asp-controller="Cart" asp-action="Add">
-                            <div class="row product_size_row">
-                                <div class="product_size">
-                                    <label for="sizeId">Size</label>
-                                    <select name="size" id="size">
-                                        @foreach (var size in Model.Product.Sizes)
-                                        {
-                                            <option value="@size.Name">@size.Name</option>
-                                        }
-                                    </select>
+                        if (Model.Product.Sizes.Any(s => s.Quantity > 0))
+                        {
+                            <form class="d-block" asp-area="Profile" asp-controller="Cart" asp-action="Add">
+                                <div class="row product_size_row">
+                                    <div class="product_size">
+                                        <label for="sizeId">Size</label>
+                                        <select name="size" id="size">
+                                            @foreach (var size in Model.Product.Sizes)
+                                            {
+                                                <option value="@size.Name">@size.Name</option>
+                                            }
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
-                       
-                            <div class="product_count">
-                                <label for="sst">Quantity:</label>
-                                <input type="text" name="quantity" id="sst" maxlength="12" value="1" title="Quantity:" class="input-text qty">
-                                <button onclick="var result = document.getElementById('sst');var sst = result.value;if (!isNaN(sst)) result.value++;return false;" class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
-                                <button onclick="var result = document.getElementById('sst'); var sst = result.value; if (!isNaN(sst)  && sst > 0 )result.value--;return false;" class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
-                            </div>
-                            <input type="hidden" name="productId" value="@Model.Product.Id"/>
-                            <div class="card_area">
-                                <button type="submit" class="main_btn">Add to Cart</button>
-                                <a class="icon_btn add-to-whishlist" data-id="@Model.Product.Id"><i class="lnr lnr lnr-heart"></i></a>
-                                @if (User.IsInRole("Admin"))
-                                {
-                                    <a asp-area="Shopping" asp-controller="Products" asp-action="Delete" asp-route-id="@Model.Product.Id" asp-route-isHome="true" class="icon_btn confirm-delete"><i class="lnr lnr-cross"></i></a>
-                                }
-                            </div>
-                        </form>   
-                    }     
+
+                                <div class="product_count">
+                                    <label for="sst">Quantity:</label>
+                                    <input type="text" name="quantity" id="sst" maxlength="1" value="1" title="Quantity:" class="input-text qty">
+                                    <button onclick="var result = document.getElementById('sst'); var max = result.maxLength;var sst = result.value;if (!isNaN(sst) && sst < max) result.value++;return false;" class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
+                                    <button onclick="var result = document.getElementById('sst'); var sst = result.value; if (!isNaN(sst)  && sst > 0 )result.value--;return false;" class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
+                                </div>
+                                <input type="hidden" name="productId" value="@Model.Product.Id" />
+                                <div class="card_area">
+                                    <button type="submit" class="main_btn">Add to Cart</button>
+                                    <a class="icon_btn add-to-whishlist" data-id="@Model.Product.Id"><i class="lnr lnr lnr-heart"></i></a>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a asp-area="Shopping" asp-controller="Products" asp-action="Delete" asp-route-id="@Model.Product.Id" asp-route-isHome="true" class="icon_btn confirm-delete"><i class="lnr lnr-cross"></i></a>
+                                    }
+                                </div>
+                            </form>
+                        }
+                    }
+                    else
+                    {
+                        <div class="card_area">
+                            <a asp-area="Shopping" asp-controller="Products" asp-action="Edit" asp-route-id="@Model.Product.Id" class="icon_btn"><i class="lnr lnr-pencil"></i></a>
+                            <a asp-area="Shopping" asp-controller="Products" asp-action="Delete" asp-route-id="@Model.Product.Id" asp-route-isHome="true" class="icon_btn confirm-delete"><i class="lnr lnr-cross"></i></a>
+                        </div>
+                    }
+
                 </div>
             </div>
         </div>
@@ -133,64 +144,64 @@
                 <div class="table-responsive">
                     <table class="table">
                         <tbody>
-                        <tr>
-                            <td>
-                                <h5>Gender</h5>
-                            </td>
-                            <td>
-                                <h5>@Model.Product.Sex</h5>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <h5>Color</h5>
-                            </td>
-                            <td>
-                                <h5>
-                                    @{
-                                        var color = Model.Product.Color.Replace(" ", string.Empty).Trim().ToLower();
-                                        if (Color.FromName(color).IsKnownColor)
-                                        {
-                                             <div class="product_color" style="background-color: @color"></div>
+                            <tr>
+                                <td>
+                                    <h5>Gender</h5>
+                                </td>
+                                <td>
+                                    <h5>@Model.Product.Sex</h5>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h5>Color</h5>
+                                </td>
+                                <td>
+                                    <h5>
+                                        @{
+                                            var color = Model.Product.Color.Replace(" ", string.Empty).Trim().ToLower();
+                                            if (Color.FromName(color).IsKnownColor)
+                                            {
+                                                <div class="product_color" style="background-color: @color"></div>
+                                            }
+                                            else
+                                            {
+                                                @Model.Product.Color
+                                            }
                                         }
-                                        else
-                                        {
-                                             @Model.Product.Color
-                                        }
-                                    }
-                                    
-                                </h5>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <h5>Available sizes</h5>
-                            </td>
-                            <td>
-                                <h5>@string.Join(", ", Model.Product.Sizes.Select(s => s.Name))</h5>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <h5>Views</h5>
-                            </td>
-                            <td>
-                                <h5>@Model.Product.Views</h5>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <h5>Bought</h5>
-                            </td>
-                            <td>
-                                <h5>@Model.Product.Orders times</h5>
-                            </td>
-                        </tr>
+
+                                    </h5>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h5>Available sizes</h5>
+                                </td>
+                                <td>
+                                    <h5>@string.Join(", ", Model.Product.Sizes.Select(s => s.Name))</h5>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h5>Views</h5>
+                                </td>
+                                <td>
+                                    <h5>@Model.Product.Views</h5>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h5>Bought</h5>
+                                </td>
+                                <td>
+                                    <h5>@Model.Product.Orders times</h5>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-            
+
             <div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
                 <div class="row">
                     <div class="col-lg-6">
@@ -219,15 +230,15 @@
                         <div class="review_list">
                             @foreach (var review in Model.Product.Reviews)
                             {
-                                <partial name="_Review" model="@review"/>    
+                                <partial name="_Review" model="@review" />
                             }
-                       </div>
+                        </div>
                     </div>
                     <div class="col-lg-6">
                         <div class="review_box">
                             <h4>Add a Review</h4>
                             <p>Your Rating:</p>
-                           
+
                             <form class="row contact_form" method="post" id="contactForm">
                                 <div class="col-md-12">
                                     <div class="form-group">
@@ -235,10 +246,10 @@
                                             @for (int i = 5; i > 0; i--)
                                             {
                                                 <option value="@i">
-                                                    @i : 
+                                                    @i :
                                                     @for (int j = 0; j < i; j++)
                                                     {
-                                                        <span>⭐</span>                                   
+                                                        <span>⭐</span>
                                                     }
                                                 </option>
                                             }
@@ -250,7 +261,7 @@
                                     <div class="form-group">
                                         <textarea class="form-control" asp-for="@Model.Comment" id="message" rows="1" placeholder="Review"></textarea>
                                     </div>
-                                    <span  asp-validation-for="@Model.Comment" class="text-danger"></span>
+                                    <span asp-validation-for="@Model.Comment" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-12">
                                     <button type="submit" value="submit" class="btn submit_btn">Submit Now</button>
@@ -265,3 +276,25 @@
 </section>
 <!--================End Product Description Area =================-->
 <partial name="_MostOrderedProductsSection" model="@Model.MostOrderedProducts" />
+
+@section Scripts
+    {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var selectedSize = $('#size').val();
+            var sizes = @Json.Serialize(Model.Product.Sizes);
+            var quantity = sizes.filter(s => s.name === selectedSize).map(p => p.quantity)[0];
+
+            $('#sst').attr('maxlength', quantity);
+
+            $('#size').on("change", function(e) {
+                var selectedSize = $(this).val();
+                var sizes = @Json.Serialize(Model.Product.Sizes);
+                var quantity = sizes.filter(s => s.name === selectedSize).map(p => p.quantity)[0];
+
+                $('#sst').attr('maxlength', quantity);
+                $('#sst').val(1);
+            });
+        });
+    </script>
+}
