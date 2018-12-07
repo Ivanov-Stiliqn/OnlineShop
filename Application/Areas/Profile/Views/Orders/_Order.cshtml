@@ -65,7 +65,7 @@
                             }
                             else
                             {
-                                <strong>Not received</strong>
+                                <strong>Not claimed</strong>
                             }
 
                         }
@@ -92,7 +92,7 @@
         <div class="media">
             <div class="media-body">
                 <p>
-                    <a asp-controller="Orders" asp-action="Details" asp-route-productId="@Model.Id" class="btn btn-primary">Details</a>
+                    <a asp-controller="Orders" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary">Details</a>
                 </p>
             </div>
         </div>

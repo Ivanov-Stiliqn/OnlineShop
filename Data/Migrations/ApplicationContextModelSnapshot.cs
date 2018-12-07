@@ -166,6 +166,8 @@ namespace Data.Migrations
 
                     b.Property<string>("ProductName");
 
+                    b.Property<decimal>("ProductPrice");
+
                     b.Property<int>("Quantity");
 
                     b.Property<string>("SellerId");
@@ -299,12 +301,12 @@ namespace Data.Migrations
                     b.ToTable("Sizes");
 
                     b.HasData(
-                        new { Id = new Guid("1a27ad17-ab89-42a5-bbc1-88672ed4d49f"), Name = "S" },
-                        new { Id = new Guid("439adda7-6c19-4c8b-943e-13cfffcae93e"), Name = "M" },
-                        new { Id = new Guid("8ef75493-0d49-4dbf-9297-9d4936b2af83"), Name = "L" },
-                        new { Id = new Guid("3485d6ee-ffd0-42ab-bc8b-26d524dcb5a1"), Name = "XL" },
-                        new { Id = new Guid("569dc60e-52d7-461b-b691-ccf1c0865b5d"), Name = "XS" },
-                        new { Id = new Guid("8eccfd25-67f6-467d-adab-41df5ca4d228"), Name = "XXL" }
+                        new { Id = new Guid("3ebfb525-6a1e-4191-8b57-9305370fe432"), Name = "S" },
+                        new { Id = new Guid("ae08b74b-30b1-496c-8eaf-62c644d69060"), Name = "M" },
+                        new { Id = new Guid("daa1ff44-5b67-4aac-99e0-4cbe6176479b"), Name = "L" },
+                        new { Id = new Guid("2134363a-8d39-49b9-8910-ec9470892c90"), Name = "XL" },
+                        new { Id = new Guid("7c8ce256-2bf1-4bfd-837d-4506cba89fc8"), Name = "XS" },
+                        new { Id = new Guid("c56bb343-195a-497d-a418-ac28dda1a4cd"), Name = "XXL" }
                     );
                 });
 

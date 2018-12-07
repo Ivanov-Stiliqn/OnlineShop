@@ -147,7 +147,8 @@ namespace Application.Areas.Profile.Controllers
                     ProductName = product.Name,
                     ProductImage = product.Image,
                     Size = product.Size,
-                    Quantity = product.Quantity
+                    Quantity = product.Quantity,
+                    ProductPrice = product.Price
                 });
             }
 

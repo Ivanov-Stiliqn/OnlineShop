@@ -1,0 +1,52 @@
+﻿@model ICollection<AllOrdersViewModel>
+
+<section class="banner_area">
+    <div class="banner_inner d-flex align-items-center">
+        <div class="container">
+            <div class="banner_content text-center">
+                <h2>All Orders</h2>
+
+                <div class="page_link">
+                    <a asp-area="Shopping" asp-controller="Products" asp-action="Index">Home</a>
+                    <a asp-controller="Orders" asp-action="All">All Orders</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================End Home Banner Area =================-->
+<!--================Cart Area =================-->
+<section class="cart_area">
+    <div class="container">
+        @if (Model.Any())
+        {
+            <div class="cart_inner">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Product</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Buyer</th>
+                                <th scope="col">Seller</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model)
+                            {
+                                <partial name="_AdminOrder" model="@product" />
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <h2 class="text-center">No orders at the moment.</h2>
+        }
+    </div>
+</section>

@@ -1,0 +1,78 @@
+﻿@model AllOrdersViewModel
+
+<tr>
+    <td>
+        <div class="media">
+            <div class="d-flex">
+                <img width="140" height="100" src="@Model.ProductImage" alt="">
+            </div>
+            <div class="media-body">
+                @if (Model.ProductId == Guid.Empty)
+                {
+                    <p>@Model.ProductName (not available)</p>
+                }
+                else
+                {
+                    <p><a asp-area="Shopping" asp-controller="Products" asp-action="Details" asp-route-id="@Model.ProductId">@Model.ProductName</a></p>
+                }
+            </div>
+        </div>
+    </td>
+    <td>
+        <div class="media">
+            <div class="media-body">
+                <p>@Model.DateOfCreation.ToShortDateString()</p>
+            </div>
+        </div>
+    </td>
+    <td>
+        <div class="media">
+            <div class="media-body">
+                <p>@Model.Quantity</p>
+            </div>
+        </div>
+    </td>
+    <td>
+        <div class="media">
+            <div class="media-body">
+                <p>@Model.Buyer</p>
+            </div>
+        </div>
+    </td>
+    <td>
+        <div class="media">
+            <div class="media-body">
+                <p>@Model.Seller</p>
+            </div>
+        </div>
+    </td>
+    <td>
+        <div class="media">
+            <div class="media-body">
+                <p>
+                    @if (!Model.IsAccepted)
+                    {
+                        <strong>Not Accepted</strong>
+                    }
+                    else if (!Model.IsDelivered)
+                    {
+                        <strong>Not Claimed</strong>
+                    }
+                    else
+                    {
+                        <strong>Completed</strong>
+                    }
+                </p>
+            </div>
+        </div>
+    </td>
+    <td>
+        <div class="media">
+            <div class="media-body">
+                <p>
+                    <a asp-area="Profile" asp-controller="Orders" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary">Details</a>
+                </p>
+            </div>
+        </div>
+    </td>
+</tr>

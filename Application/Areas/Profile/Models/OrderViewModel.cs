@@ -21,8 +21,6 @@ namespace Application.Areas.Profile.Models
 
         public string Seller { get; set; }
 
-        public DateTime DateOfCreation { get; set; }
-
         public string Size { get; set; }
 
         public int Quantity { get; set; }

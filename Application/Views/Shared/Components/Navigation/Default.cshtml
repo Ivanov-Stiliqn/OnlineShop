@@ -23,23 +23,23 @@
 
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <ul class="nav navbar-nav navbar-left">
-                            <li class="nav-item"><a class="nav-link" asp-area="Shopping" asp-controller="Products" asp-action="Create">Create Product</a></li>
-                            @if (User.IsInRole("Admin"))
-                            {
-
-                                <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="Categories" asp-action="Create">Create Category</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="Users" asp-action="All">Users</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="Categories" asp-action="Index">Categories</a></li>
-                            }
-                        </ul>    
-                    }
-                    
-
-                        <ul class="nav navbar-nav menu_nav ml-auto">
-                            <li class="nav-item active"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <ul class="nav navbar-nav menu_nav ml-auto">
+                        <li class="nav-item active"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item submenu dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin</a>
+                                <ul class="dropdown-menu">
+                                    <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="Categories" asp-action="Create">Create Category</a></li>
+                                    <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="Users" asp-action="All">Users</a></li>
+                                    <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="Reports" asp-action="All">Reports</a></li>
+                                    <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="Categories" asp-action="Index">Categories</a></li>
+                                    <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="Orders" asp-action="All">Orders</a></li>
+                                </ul>
+                            </li>
+                        }
+                        @if (this.User.Identity.IsAuthenticated)
+                        {
                             <li class="nav-item submenu dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Shop</a>
                                 <ul class="dropdown-menu">
@@ -49,15 +49,25 @@
                                     }
                                 </ul>
                             </li>
-                            <li class="nav-item"><a class="nav-link" asp-area="Shopping" asp-controller="Products" asp-action="MyProducts">My Products</a></li>
-                            <li class="nav-item active"><a class="nav-link" asp-area="Profile" asp-controller="Orders" asp-action="SellOrders">Sell Orders</a></li>
-                            <li class="nav-item active"><a class="nav-link" asp-area="Profile" asp-controller="Orders" asp-action="PurchaseOrders">Purchase Orders</a></li>
-                        </ul>
-                    <partial name="_LoginPartial"/>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="nav-item"><a asp-area="Profile" asp-controller="Cart" asp-action="Index" class="cart"><i class="lnr lnr lnr-cart"></i></a></li>
-                        <li class="nav-item"><a asp-area="Profile" asp-controller="Wishlist" asp-action="Index" class="cart"><i class="lnr lnr lnr-heart"></i></a></li>
+                            <li class="nav-item submenu dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Profile</a>
+                                <ul class="dropdown-menu">
+                                    <li class="nav-item"><a class="nav-link" asp-area="Shopping" asp-controller="Products" asp-action="Create">Create Product</a></li>
+                                    <li class="nav-item"><a class="nav-link" asp-area="Shopping" asp-controller="Products" asp-action="MyProducts">My Products</a></li>
+                                    <li class="nav-item"><a class="nav-link" asp-area="Profile" asp-controller="Orders" asp-action="SellOrders">Sell Orders</a></li>
+                                    <li class="nav-item "><a class="nav-link" asp-area="Profile" asp-controller="Orders" asp-action="PurchaseOrders">Purchase Orders</a></li>
+                                </ul>
+                            </li>
+                        } 
                     </ul>
+                    <partial name="_LoginPartial" />
+                    @if (this.User.Identity.IsAuthenticated)
+                    {
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="nav-item"><a asp-area="Profile" asp-controller="Cart" asp-action="Index" class="cart"><i class="lnr lnr lnr-cart"></i></a></li>
+                            <li class="nav-item"><a asp-area="Profile" asp-controller="Wishlist" asp-action="Index" class="cart"><i class="lnr lnr lnr-heart"></i></a></li>
+                        </ul>
+                    }
                 </div>
             </div>
         </nav>

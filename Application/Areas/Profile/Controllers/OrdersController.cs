@@ -64,7 +64,16 @@ namespace Application.Areas.Profile.Controllers
 
         public IActionResult Details(string id)
         {
-            return View();
+            var order = this.ordersService.GetOrderDetails(id);
+            if(order == null)
+            {
+                this.TempData["Error"] = "Order does not exists.";
+                return RedirectToAction(nameof(ProductsController.Index), "Products", new {area = "Shopping"});
+            }
+
+            var model = order.Map<Order, OrderDetailsViewModel>();
+
+            return View(model);
         }
     }
 }

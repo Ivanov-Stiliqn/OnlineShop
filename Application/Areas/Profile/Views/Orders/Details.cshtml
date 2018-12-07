@@ -1,1 +1,143 @@
-﻿<h1>Order Details</h1>
+﻿@using System.Globalization
+@model OrderDetailsViewModel
+
+<section class="banner_area">
+    <div class="banner_inner d-flex align-items-center">
+        <div class="container">
+            <div class="banner_content text-center">
+                <h2>Order Details</h2>
+                <div class="page_link">
+                    <a asp-area="Shopping" asp-controller="Products" asp-action="Index">Home</a>
+                    <a asp-controller="Orders" asp-action="Details" asp-route-id="@Model.Id">Order Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--================End Home Banner Area =================-->
+<!--================Order Details Area =================-->
+<section class="order_details p_120">
+    <div class="container">
+        <div class="row order_d_inner">
+            <div class="col-lg-4">
+                <div class="details_item">
+                    <h4>Order Info</h4>
+                    <ul class="list">
+                        <li><a href="#"><span>Buyer:</span>@Model.Buyer</a></li>
+                        <li><a href="#"><span>Phone:</span>@Model.UserInfo.Phone</a></li>
+                        <li><a href="#"><span>Email:</span>@Model.UserInfo.Email</a></li>
+                        <li><a href="#"><span>Date:</span>@Model.DateOfCreation.ToShortDateString()</a></li>
+                        <li><a href="#"><span>Total:</span>USD @((Model.Quantity * Model.ProductPrice).ToString("F2", CultureInfo.InvariantCulture)) </a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="details_item">
+                    <h4>Shipping Address</h4>
+                    <ul class="list">
+                        <li><a href="#"><span>First Name:</span>@Model.UserInfo.FirstName</a></li>
+                        <li><a href="#"><span>Last Name:</span>@Model.UserInfo.LastName</a></li>
+                        <li><a href="#"><span>Address:</span>@Model.UserInfo.Address</a></li>
+                        <li><a href="#"><span>City:</span>@Model.UserInfo.City</a></li>
+                        <li><a href="#"><span>Postcode:</span>@Model.UserInfo.PostCode</a></li>
+
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="details_item">
+                    <h4>Additional information</h4>
+                    <ul class="list">
+                        <li><span>@Model.UserInfo.AdditionalInfo</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="order_details_table">
+            <h2>Order Details</h2>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Product</th>
+                        <th scope="col">Size</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Price</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <p>@Model.ProductName</p>
+                        </td>
+                        <td>
+                            <p>@Model.Size</p>
+                        </td>
+                        <td>
+                            <h5>x @Model.Quantity</h5>
+                        </td>
+                        <td>
+                            <p>$@Model.ProductPrice</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h4>Subtotal</h4>
+                        </td>
+                        <td>
+                            <h5></h5>
+                        </td>
+                        <td>
+                            <h5></h5>
+                        </td>
+                        <td>
+                            <p>$ @((Model.Quantity * Model.ProductPrice).ToString("F2", CultureInfo.InvariantCulture))</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h4>Shipping</h4>
+                        </td>
+                        <td>
+                            <h5></h5>
+                        </td>
+                        <td>
+                            <h5></h5>
+                        </td>
+                        <td>
+                            <p>Free</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h4>Total</h4>
+                        </td>
+                        <td>
+                            <h5></h5>
+                        </td>
+                        <td>
+                            <h5></h5>
+                        </td>
+                        <td>
+                            <p>$ @((Model.Quantity * Model.ProductPrice).ToString("F2", CultureInfo.InvariantCulture))</p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @if (!this.User.IsInRole("Admin"))
+        {
+            <div class="text-center my-5">
+                @if (this.User.Identity.Name == Model.Seller)
+                {
+                    <a asp-controller="Reports" asp-action="Create" asp-route-userId="@Model.BuyerId" class="title_confirmation btn btn-danger text-white">Report User</a>
+                }
+                else if (this.User.Identity.Name == Model.Buyer)
+                {
+                    <a asp-controller="Reports" asp-action="Create" asp-route-userId="@Model.SellerId" class="title_confirmation btn btn-danger text-white">Report User</a>
+                }
+            </div>
+        }
+    </div>
+</section>

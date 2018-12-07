@@ -136,5 +136,30 @@ namespace Services
 
             return user.PurchaseOrders.Where(o => o.IsAccepted).ToList();
         }
+
+        public Order GetOrderDetails(string id)
+        {
+            var check = Guid.TryParse(id, out Guid parsedId);
+            if (!check)
+            {
+                return null;
+            }
+
+            return this.ordersRepository
+                .All()
+                .Include(o => o.Seller)
+                .Include(o => o.Buyer)
+                .ThenInclude(b => b.UserInfo)
+                .FirstOrDefault(o => o.Id == parsedId);
+        }
+
+        public ICollection<Order> GetAllOrders()
+        {
+            return this.ordersRepository
+                .All()
+                .Include(o => o.Buyer)
+                .Include(o => o.Seller)
+                .ToList();
+        }
     }
 }

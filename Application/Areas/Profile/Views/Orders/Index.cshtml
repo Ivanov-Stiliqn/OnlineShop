@@ -6,22 +6,23 @@
             <div class="banner_content text-center">
                 @if (Model.Any(p => p.Buyer == this.User.Identity.Name))
                 {
-                    <h2>Orders in progress</h2>
+                    <h2>Purchase Orders</h2>
                 }
                 else if(Model.Any(p => p.Seller == this.User.Identity.Name))
                 {
-                    <h2>Pending Orders</h2>
+                    <h2>Sell Orders</h2>
                 }
                 
                     <div class="page_link">
-                        <a asp-area="Shopping" asp-controller="Products" asp-action="Index">Home</a>
                         @if (Model.Any(p => p.Buyer == this.User.Identity.Name))
                         {
-                            <a asp-controller="Orders" asp-action="Pending">Orders in progress</a>
+                            <a asp-area="Shopping" asp-controller="Products" asp-action="Index">Home</a>
+                            <a asp-controller="Orders" asp-action="PurchaseOrders">Purchase orders</a>
                         }
                         else if (Model.Any(p => p.Seller == this.User.Identity.Name))
                         {
-                            <a asp-controller="Orders" asp-action="Pending">Pending orders</a>
+                            <a asp-area="Shopping" asp-controller="Products" asp-action="Index">Home</a>
+                            <a asp-controller="Orders" asp-action="SellOrders">Sell Orders</a>
                         }
 
                     </div>

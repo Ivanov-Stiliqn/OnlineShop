@@ -17,5 +17,9 @@ namespace Services.Contracts
         Task<bool> ReceiveOrder(string id, string username);
 
         Task<bool> AcceptOrder(string id, string username);
+
+        Order GetOrderDetails(string id);
+
+        ICollection<Order> GetAllOrders();
     }
 }
