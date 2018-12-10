@@ -51,7 +51,8 @@ namespace Application.Areas.Admin.Controllers
 
             var uploadParams = new ImageUploadParams
             {
-                File = new FileDescription(file.FileName, file.OpenReadStream())
+                File = new FileDescription(file.FileName, file.OpenReadStream()),
+                Transformation = new Transformation().Width(600).Height(600).Crop("scale")
             };
 
             var result = await cloudinary.UploadAsync(uploadParams);
@@ -114,7 +115,8 @@ namespace Application.Areas.Admin.Controllers
 
                 var uploadParams = new ImageUploadParams
                 {
-                    File = new FileDescription(file.FileName, file.OpenReadStream())
+                    File = new FileDescription(file.FileName, file.OpenReadStream()),
+                    Transformation = new Transformation().Width(600).Height(600).Crop("scale")
                 };
 
                 var result = await cloudinary.UploadAsync(uploadParams);

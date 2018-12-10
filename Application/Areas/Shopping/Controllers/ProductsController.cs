@@ -79,7 +79,7 @@ namespace Application.Areas.Shopping.Controllers
                 var uploadParams = new ImageUploadParams
                 {
                     File = new FileDescription(formFile.FileName, formFile.OpenReadStream()),
-                    Transformation = new Transformation().Width(262).Height(262).Crop("scale")
+                    Transformation = new Transformation().Width(600).Height(600).Crop("scale")
                 };
 
                 var result = await cloudinary.UploadAsync(uploadParams);
@@ -225,7 +225,7 @@ namespace Application.Areas.Shopping.Controllers
                     var uploadParams = new ImageUploadParams
                     {
                         File = new FileDescription(formFile.FileName, formFile.OpenReadStream()),
-                        Transformation = new Transformation().Width(262).Height(262).Crop("scale")
+                        Transformation = new Transformation().Width(600).Height(600).Crop("scale")
                     };
 
                     var result = await cloudinary.UploadAsync(uploadParams);

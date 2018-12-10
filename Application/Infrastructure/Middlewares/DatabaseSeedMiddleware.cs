@@ -86,6 +86,24 @@ namespace Application.Infrastructure.Middlewares
                     });
             }
 
+//            var sizes = new List<Size>();
+//            for (int i = 32; i < 52; i++)
+//            {
+//                sizes.Add(new Size()
+//                {
+//                    Id = Guid.NewGuid(),
+//                    Name = i.ToString()
+//                });
+//
+//                sizes.Add(new Size()
+//                {
+//                    Id = Guid.NewGuid(),
+//                    Name = i.ToString() + ".5"
+//                });
+//            }
+//
+//            db.Sizes.AddRange(sizes);
+
 //            if (!db.Reports.Any())
 //            {
 //                db.Reports.AddRange(new Report()
