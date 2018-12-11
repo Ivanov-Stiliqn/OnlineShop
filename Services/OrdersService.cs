@@ -15,18 +15,15 @@ namespace Services
     public class OrdersService : IOrdersService
     {
         private readonly IRepository<Order> ordersRepository;
-        private readonly IRepository<ProductSize> productSizeRepository;
         private readonly IRepository<User> usersRepository;
         private readonly IRepository<Product> productsRepository;
 
         public OrdersService(
             IRepository<Order> ordersRepository,
-            IRepository<ProductSize> productSizeRepository,
             IRepository<User> usersRepository,
             IRepository<Product> productsRepository)
         {
             this.ordersRepository = ordersRepository;
-            this.productSizeRepository = productSizeRepository;
             this.usersRepository = usersRepository;
             this.productsRepository = productsRepository;
         }
@@ -73,7 +70,7 @@ namespace Services
                     .ThenInclude(o => o.Buyer)
                 .FirstOrDefault(u => u.UserName == username);
 
-            return user.SellOrders.ToList();
+            return user.SellOrders.OrderByDescending(o => o.DateOfCreation).ToList();
         }
 
         public async Task<bool> AcceptOrder(string id, string username)
@@ -129,12 +126,12 @@ namespace Services
             var user = this.usersRepository
                 .All()
                 .Include(p => p.PurchaseOrders)
-                .ThenInclude(o => o.Product)
+                    .ThenInclude(o => o.Product)
                 .Include(p => p.PurchaseOrders)
-                .ThenInclude(o => o.Seller)
+                    .ThenInclude(o => o.Seller)
                 .FirstOrDefault(u => u.UserName == username);
 
-            return user.PurchaseOrders.Where(o => o.IsAccepted).ToList();
+            return user.PurchaseOrders.OrderByDescending(o => o.DateOfCreation).ToList();
         }
 
         public Order GetOrderDetails(string id)
@@ -159,6 +156,7 @@ namespace Services
                 .All()
                 .Include(o => o.Buyer)
                 .Include(o => o.Seller)
+                .OrderByDescending(o => o.DateOfCreation)
                 .ToList();
         }
     }

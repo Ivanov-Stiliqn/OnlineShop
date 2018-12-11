@@ -75,7 +75,14 @@
                     {
                         if (!Model.IsDelivered)
                         {
-                            <a asp-controller="Orders" asp-action="Receive" asp-route-id="@Model.Id" asp-route-productId="@Model.ProductId" class="btn btn-success">Receive</a>
+                            if (!Model.IsAccepted)
+                            {
+                                <strong>Not accepted</strong>
+                            }
+                            else
+                            {
+                                <a asp-controller="Orders" asp-action="Receive" asp-route-id="@Model.Id" asp-route-productId="@Model.ProductId" class="btn btn-success">Receive</a>
+                            }
                         }
                         else
                         {
