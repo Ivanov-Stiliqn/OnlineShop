@@ -13,9 +13,9 @@ namespace Services.Contracts
 
         ICollection<User> SearchByName(string search, string currentUser);
 
-        Task<bool> RestrictUser(string userId);
+        Task<bool> RestrictUser(string userId, string currentUser);
 
-        Task<bool> UnRestrictUser(string userId);
+        Task<bool> UnRestrictUser(string userId, string currentUser);
 
         UserInfo GetUserInfo(string username);
 

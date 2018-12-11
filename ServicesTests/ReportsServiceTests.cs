@@ -98,9 +98,15 @@ namespace ServicesTests
                 new User{ UserName = "gosho" },
             }.AsQueryable());
 
+            var reports = new List<Report>();
+            reportRepo.Setup(r => r.All()).Returns(reports.AsQueryable());
+            reportRepo.Setup(r => r.AddAsync(It.IsAny<Report>())).Returns<Report>(Task.FromResult)
+                .Callback<Report>(r => reports.Add(r));
+
             var service = new ReportsService(reportRepo.Object, usersRepo.Object);
             var report = new Report
             {
+                Id = Guid.NewGuid(),
                 Reporter = new User(),
                 ReportedUser = new User(),
                 DateOfCreation = DateTime.Now.AddDays(3),
@@ -109,11 +115,14 @@ namespace ServicesTests
             };
 
             await service.SubmitReport(report, "stamat");
+
+            Assert.Equal(1, reports.Count);
+            Assert.Contains(reports, r => r.Id == report.Id);
             reportRepo.Verify(r => r.AddAsync(report), Times.Once);
         }
 
         [Fact]
-        public async Task SubmitReportShouldThowErrorForNonExistingUser()
+        public async Task SubmitReportShouldThrowErrorForNonExistingUser()
         {
             var reportRepo = new Mock<IRepository<Report>>();
             var usersRepo = new Mock<IRepository<User>>();

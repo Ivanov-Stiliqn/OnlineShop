@@ -45,10 +45,10 @@ namespace Services
                 ).ToList();
         }
 
-        public async Task<bool> RestrictUser(string userId)
+        public async Task<bool> RestrictUser(string userId, string currentUser)
         {
             var user = this.usersRepository.All().FirstOrDefault(u => u.Id == userId);
-            if (user == null)
+            if (user == null || user.UserName == currentUser)
             {
                 return false;
             }
@@ -58,10 +58,10 @@ namespace Services
             return true;
         }
 
-        public async Task<bool> UnRestrictUser(string userId)
+        public async Task<bool> UnRestrictUser(string userId, string currentUser)
         {
             var user = this.usersRepository.All().FirstOrDefault(u => u.Id == userId);
-            if (user == null)
+            if (user == null || user.UserName == currentUser)
             {
                 return false;
             }
@@ -101,11 +101,14 @@ namespace Services
             }
 
             var whishlist = user.Whishlist.Split(new []{", "}, StringSplitOptions.RemoveEmptyEntries).ToList();
-            whishlist.Add(productId);
+            if (!whishlist.Contains(productId))
+            {
+                whishlist.Add(productId);
+                user.Whishlist = string.Join(", ", whishlist);
 
-            user.Whishlist = string.Join(", ", whishlist);
-
-            await this.usersRepository.SaveChangesAsync();
+                await this.usersRepository.SaveChangesAsync();
+            }
+           
         }
 
         public ICollection<Product> GetWishList(string username)

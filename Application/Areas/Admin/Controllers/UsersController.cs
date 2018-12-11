@@ -27,13 +27,12 @@ namespace Application.Areas.Admin.Controllers
             var users = search != null ? this.service.SearchByName(search, this.User.Identity.Name) : this.service.AllUsers(this.User.Identity.Name);
             var model = users.Select(u => u.Map<User, UserViewModel>()).ToList();
 
-
             return View(model);
         }
 
         public async Task<IActionResult> Restrict(string userId)
         {
-            var check = await this.service.RestrictUser(userId);
+            var check = await this.service.RestrictUser(userId, this.User.Identity.Name);
             if (!check)
             {
                 this.TempData["Error"] = "User does not exists.";
@@ -46,7 +45,7 @@ namespace Application.Areas.Admin.Controllers
 
         public async Task<IActionResult> UnRestrict(string userId)
         {
-            var check = await this.service.UnRestrictUser(userId);
+            var check = await this.service.UnRestrictUser(userId, this.User.Identity.Name);
             if (!check)
             {
                 this.TempData["Error"] = "User does not exists.";
