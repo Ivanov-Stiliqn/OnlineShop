@@ -20,7 +20,7 @@ namespace Services.Contracts
 
         Product GetTopProduct();
 
-        Task<Product> GetProduct(Guid id);
+        Task<Product> GetProduct(string id, bool increaseViews);
 
         Product GetProductForCart(string id);
 

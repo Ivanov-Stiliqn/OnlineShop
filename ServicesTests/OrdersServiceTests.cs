@@ -197,7 +197,7 @@ namespace ServicesTests
         }
 
         [Fact]
-        public void GetSellOrdersShouldOrderDescending()
+        public void GetSellOrdersShouldOrderAscendingByDate()
         {
             var userRepo = new Mock<IRepository<User>>();
             userRepo.Setup(r => r.All()).Returns(new List<User>
@@ -218,9 +218,9 @@ namespace ServicesTests
             var orders = service.GetSellOrders("stamat").ToList();
 
             Assert.Equal(3, orders.Count);
-            Assert.Equal("1", orders.First().ProductName);
+            Assert.Equal("3", orders.First().ProductName);
             Assert.Equal("2", orders[1].ProductName);
-            Assert.Equal("3", orders.Last().ProductName);
+            Assert.Equal("1", orders.Last().ProductName);
             userRepo.Verify(r => r.All(), Times.Once);
         }
 
@@ -243,7 +243,7 @@ namespace ServicesTests
         }
 
         [Fact]
-        public void GetPurchaseOrdersShouldOrderDescending()
+        public void GetPurchaseOrdersShouldOrderAscendingByDate()
         {
             var userRepo = new Mock<IRepository<User>>();
             userRepo.Setup(r => r.All()).Returns(new List<User>
@@ -264,9 +264,9 @@ namespace ServicesTests
             var orders = service.GetPurchaseOrders("stamat").ToList();
 
             Assert.Equal(3, orders.Count);
-            Assert.Equal("1", orders.First().ProductName);
+            Assert.Equal("3", orders.First().ProductName);
             Assert.Equal("2", orders[1].ProductName);
-            Assert.Equal("3", orders.Last().ProductName);
+            Assert.Equal("1", orders.Last().ProductName);
             userRepo.Verify(r => r.All(), Times.Once);
         }
 
@@ -587,7 +587,7 @@ namespace ServicesTests
         }
 
         [Fact]
-        public void GetAllOrdersShouldOrderDescending()
+        public void GetAllOrdersShouldOrderAscendingByDate()
         {
             var orderRepo = new Mock<IRepository<Order>>();
             var orders = new List<Order>
@@ -603,9 +603,9 @@ namespace ServicesTests
             var checkOrders = service.GetAllOrders().ToList();
 
             Assert.Equal(3, checkOrders.Count);
-            Assert.Equal("1", checkOrders.First().ProductName);
+            Assert.Equal("3", checkOrders.First().ProductName);
             Assert.Equal("2", checkOrders[1].ProductName);
-            Assert.Equal("3", checkOrders.Last().ProductName);
+            Assert.Equal("1", checkOrders.Last().ProductName);
             orderRepo.Verify(r => r.All(), Times.Once);
         }
     }

@@ -98,14 +98,7 @@ namespace Application.Areas.Shopping.Controllers
 
         public async Task<IActionResult> Details(string id)
         {
-            var check = Guid.TryParse(id, out Guid parsedId);
-            if (!check)
-            {
-                this.TempData["Error"] = "Product does not exists.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            var product = await this.productsService.GetProduct(parsedId);
+            var product = await this.productsService.GetProduct(id, true);
             if (product == null)
             {
                 this.TempData["Error"] = "Product does not exists.";
@@ -120,22 +113,22 @@ namespace Application.Areas.Shopping.Controllers
                 MostOrderedProducts = this.productsService.GetMostOrderedProducts().Select(p => p.Map<Product, ProductViewModel>()).ToList()
             };
 
+            this.TempData["CurrentProductId"] = id;
             return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Details(ProductDetailsPageViewModel model, string id)
         {
-            var check = Guid.TryParse(id, out Guid parsedId);
-            if (!check)
+            if (this.TempData["CurrentProductId"].ToString() != id)
             {
-                this.TempData["Error"] = "Product does not exists.";
+                this.TempData["Error"] = "Invalid operation.";
                 return RedirectToAction(nameof(Index));
             }
 
             if (!this.ModelState.IsValid)
             {
-                var product = await this.productsService.GetProduct(parsedId);
+                var product = await this.productsService.GetProduct(id, false);
                 if (product == null)
                 {
                     this.TempData["Error"] = "Product does not exists.";
@@ -147,13 +140,13 @@ namespace Application.Areas.Shopping.Controllers
                 model.Product = details;
                 model.MostOrderedProducts = this.productsService.GetMostOrderedProducts()
                     .Select(p => p.Map<Product, ProductViewModel>()).ToList();
-                
 
+                this.TempData["CurrentProductId"] = id;
                 return View(model);
             }
 
             var review = model.Map<ProductDetailsPageViewModel, Review>();
-            review.ProductId = parsedId;
+            review.ProductId = Guid.Parse(id);
 
             await this.reviewService.Create(review, this.User.Identity.Name);
 

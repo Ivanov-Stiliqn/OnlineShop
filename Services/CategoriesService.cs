@@ -72,10 +72,10 @@ namespace Services
                 products = products.Where(p => p.Sex == sex).ToList();
             }
 
-            this.SearchedProductsCount = products.Count();
+            this.SearchedProductsCount = products.Count;
 
             await this.categoryRepository.SaveChangesAsync();
-            return products.Skip(skip).Take(take).ToList();
+            return products.OrderBy(p => p.DateOfCreation).Skip(skip).Take(take).ToList();
         }
 
         public Category GetCategory(string id)

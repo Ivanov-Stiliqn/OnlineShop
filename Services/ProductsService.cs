@@ -40,7 +40,7 @@ namespace Services
 
         public ICollection<Product> GetLatestProducts()
         {
-            return this.productsRepository.All().OrderByDescending(p => p.DateOfCreation).Take(8).ToList();
+            return this.productsRepository.All().OrderBy(p => p.DateOfCreation).Take(8).ToList();
         }
 
         public ICollection<Product> GetMostViewedProducts()
@@ -58,8 +58,14 @@ namespace Services
             return this.productsRepository.All().Include(p => p.Orders).OrderByDescending(p => p.Orders.Count).FirstOrDefault();
         }
 
-        public async Task<Product> GetProduct(Guid id)
+        public async Task<Product> GetProduct(string id, bool increaseView)
         {
+            var check = Guid.TryParse(id, out Guid parsedId);
+            if (!check)
+            {
+                return null;
+            }
+
             var product = this.productsRepository.All()
                 .Include(p => p.Creator)
                 .Include(p => p.Orders)
@@ -67,9 +73,9 @@ namespace Services
                     .ThenInclude(r => r.User)
                 .Include(p => p.Sizes)
                     .ThenInclude(p => p.Size)
-                .FirstOrDefault(p => p.Id == id);
+                .FirstOrDefault(p => p.Id == parsedId);
 
-            if (product != null)
+            if (product != null && increaseView)
             {
                 product.Views += 1;
                 await this.productsRepository.SaveChangesAsync();

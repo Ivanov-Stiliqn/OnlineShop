@@ -46,7 +46,7 @@ namespace ServicesTests
         }
 
         [Fact]
-        public void GetReportsShouldReturnAllReportsOrderedDescending()
+        public void GetReportsShouldReturnAllReportsOrderedAscendingByDate()
         {
             var reportRepo = new Mock<IRepository<Report>>();
             reportRepo.Setup(r => r.All()).Returns(new List<Report>
@@ -82,9 +82,9 @@ namespace ServicesTests
             Assert.Equal(3, reports.Count);
             reportRepo.Verify(r => r.All(), Times.Once);
 
-            Assert.Equal("1", reports.First().Details);
+            Assert.Equal("3", reports.First().Details);
             Assert.Equal("2", reports[1].Details);
-            Assert.Equal("3", reports.Last().Details);
+            Assert.Equal("1", reports.Last().Details);
         }
 
         [Fact]
