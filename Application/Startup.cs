@@ -97,19 +97,6 @@ namespace Application
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            GenerateUserRoles(provider).Wait();
-        }
-
-        private async Task GenerateUserRoles(IServiceProvider provider)
-        {
-            var roleManager = provider.GetRequiredService<RoleManager<IdentityRole>>();
-
-            var check = await roleManager.RoleExistsAsync("Admin");
-            if (!check)
-            {
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
-            }
         }
     }
 }

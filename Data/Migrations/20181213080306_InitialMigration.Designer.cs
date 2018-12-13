@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20181205144444_ChangedOrderSize")]
-    partial class ChangedOrderSize
+    [Migration("20181213080306_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -142,6 +142,8 @@ namespace Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<int>("Type");
+
                     b.Property<int>("Views");
 
                     b.HasKey("Id");
@@ -154,29 +156,35 @@ namespace Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("BuyerId");
+
                     b.Property<DateTime>("DateOfCreation");
 
                     b.Property<bool>("IsAccepted");
 
                     b.Property<bool>("IsDelivered");
 
-                    b.Property<Guid>("ProductId");
+                    b.Property<Guid?>("ProductId");
 
                     b.Property<string>("ProductImage");
 
                     b.Property<string>("ProductName");
 
+                    b.Property<decimal>("ProductPrice");
+
                     b.Property<int>("Quantity");
+
+                    b.Property<string>("SellerId");
 
                     b.Property<string>("Size");
 
-                    b.Property<string>("UserId");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("BuyerId");
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("SellerId");
 
                     b.ToTable("Orders");
                 });
@@ -289,21 +297,19 @@ namespace Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired();
+
                     b.Property<string>("Name")
                         .IsRequired();
+
+                    b.Property<int?>("Sex");
 
                     b.HasKey("Id");
 
                     b.ToTable("Sizes");
 
-                    b.HasData(
-                        new { Id = new Guid("decfabc1-9889-4f3e-83d7-546157a944d8"), Name = "S" },
-                        new { Id = new Guid("8ba4ee21-6528-4d8b-a7fc-245dd17fa1e2"), Name = "M" },
-                        new { Id = new Guid("f4ff0789-4cec-4154-9573-77cd51151baf"), Name = "L" },
-                        new { Id = new Guid("94c6c2c7-d5dc-4c3a-839e-2c1a7effcb5d"), Name = "XL" },
-                        new { Id = new Guid("38270b05-de55-4933-ad42-544959c7659c"), Name = "XS" },
-                        new { Id = new Guid("1b59c529-91cb-4162-ba63-ea31185fbcdb"), Name = "XXL" }
-                    );
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Size");
                 });
 
             modelBuilder.Entity("Models.User", b =>
@@ -400,6 +406,26 @@ namespace Data.Migrations
                     b.ToTable("UserInfos");
                 });
 
+            modelBuilder.Entity("Models.ClothesSize", b =>
+                {
+                    b.HasBaseType("Models.Size");
+
+
+                    b.ToTable("ClothesSize");
+
+                    b.HasDiscriminator().HasValue("ClothesSize");
+                });
+
+            modelBuilder.Entity("Models.ShoesSize", b =>
+                {
+                    b.HasBaseType("Models.Size");
+
+
+                    b.ToTable("ShoesSize");
+
+                    b.HasDiscriminator().HasValue("ShoesSize");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
@@ -447,14 +473,18 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Models.Order", b =>
                 {
+                    b.HasOne("Models.User", "Buyer")
+                        .WithMany("PurchaseOrders")
+                        .HasForeignKey("BuyerId");
+
                     b.HasOne("Models.Product", "Product")
                         .WithMany("Orders")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Models.User", "User")
-                        .WithMany("Orders")
-                        .HasForeignKey("UserId");
+                    b.HasOne("Models.User", "Seller")
+                        .WithMany("SellOrders")
+                        .HasForeignKey("SellerId");
                 });
 
             modelBuilder.Entity("Models.Product", b =>

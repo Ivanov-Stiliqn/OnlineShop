@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using Models.Enums;
 
 namespace Models
 {
@@ -19,6 +20,8 @@ namespace Models
 
         [Required]
         public string Name { get; set; }
+
+        public CategoryType Type { get; set; }
 
         [Required]
         public string Image { get; set; }

@@ -63,11 +63,13 @@ namespace Application.Areas.Shopping.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateProductViewModel model)
         {
+            var categories = this.categoriesService.GetCategories()
+                .Select(c => c.Map<Category, CategoryListItemViewModel>())
+                .ToList();
+
             if (!ModelState.IsValid)
             {
-                model.AllCategories = this.categoriesService.GetCategories()
-                    .Select(c => c.Map<Category, CategoryListItemViewModel>())
-                    .ToList();
+                model.AllCategories = categories;
 
                 return View(model);
             }
@@ -86,14 +88,15 @@ namespace Application.Areas.Shopping.Controllers
                 urls.Add(result.Uri.ToString());
             }
 
-            var product = model.Map<CreateProductViewModel, Product>();
+            var type = categories.Where(c => c.Id == model.CategoryId.ToString()).Select(c => c.Type).FirstOrDefault();
 
+            var product = model.Map<CreateProductViewModel, Product>();
             product.ImageUrls = string.Join(", ", urls);
 
             await this.productsService.CreateProduct(product, User.Identity.Name);
             this.TempData["Success"] = "Product added. Please choose sizes.";
 
-            return RedirectToAction(nameof(SizesController.Create), "Sizes", new {productId = product.Id});
+            return RedirectToAction(nameof(SizesController.Create), "Sizes", new {productId = product.Id, type, sex = model.Sex});
         }
 
         public async Task<IActionResult> Details(string id)
@@ -199,11 +202,13 @@ namespace Application.Areas.Shopping.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            var categories = this.categoriesService.GetCategories()
+                .Select(c => c.Map<Category, CategoryListItemViewModel>())
+                .ToList();
+
             if (!ModelState.IsValid)
             {
-                model.AllCategories = this.categoriesService.GetCategories()
-                    .Select(c => c.Map<Category, CategoryListItemViewModel>())
-                    .ToList();
+                model.AllCategories = categories;
 
                 this.TempData["EditedProductId"] = id;
                 return View(model);
@@ -226,6 +231,9 @@ namespace Application.Areas.Shopping.Controllers
                 }
             }
 
+            var type = categories.Where(c => c.Id == model.Product.CategoryId.ToString()).Select(c => c.Type)
+                .FirstOrDefault();
+
             var product = model.Product.Map<EditProductViewModel, Product>();
             product.Id = parsedId;
 
@@ -242,7 +250,7 @@ namespace Application.Areas.Shopping.Controllers
                 return RedirectToAction(nameof(MyProducts));
             }
 
-            return RedirectToAction(nameof(SizesController.Create), "Sizes", new {productId = product.Id});
+            return RedirectToAction(nameof(SizesController.Create), "Sizes", new {productId = product.Id, type, sex = model.Product.Sex});
         }
 
         public async Task<IActionResult> Delete(string id, bool isHome)

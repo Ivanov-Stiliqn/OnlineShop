@@ -140,6 +140,8 @@ namespace Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<int>("Type");
+
                     b.Property<int>("Views");
 
                     b.HasKey("Id");
@@ -293,21 +295,19 @@ namespace Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired();
+
                     b.Property<string>("Name")
                         .IsRequired();
+
+                    b.Property<int?>("Sex");
 
                     b.HasKey("Id");
 
                     b.ToTable("Sizes");
 
-                    b.HasData(
-                        new { Id = new Guid("3ebfb525-6a1e-4191-8b57-9305370fe432"), Name = "S" },
-                        new { Id = new Guid("ae08b74b-30b1-496c-8eaf-62c644d69060"), Name = "M" },
-                        new { Id = new Guid("daa1ff44-5b67-4aac-99e0-4cbe6176479b"), Name = "L" },
-                        new { Id = new Guid("2134363a-8d39-49b9-8910-ec9470892c90"), Name = "XL" },
-                        new { Id = new Guid("7c8ce256-2bf1-4bfd-837d-4506cba89fc8"), Name = "XS" },
-                        new { Id = new Guid("c56bb343-195a-497d-a418-ac28dda1a4cd"), Name = "XXL" }
-                    );
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Size");
                 });
 
             modelBuilder.Entity("Models.User", b =>
@@ -402,6 +402,26 @@ namespace Data.Migrations
                         .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("UserInfos");
+                });
+
+            modelBuilder.Entity("Models.ClothesSize", b =>
+                {
+                    b.HasBaseType("Models.Size");
+
+
+                    b.ToTable("ClothesSize");
+
+                    b.HasDiscriminator().HasValue("ClothesSize");
+                });
+
+            modelBuilder.Entity("Models.ShoesSize", b =>
+                {
+                    b.HasBaseType("Models.Size");
+
+
+                    b.ToTable("ShoesSize");
+
+                    b.HasDiscriminator().HasValue("ShoesSize");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

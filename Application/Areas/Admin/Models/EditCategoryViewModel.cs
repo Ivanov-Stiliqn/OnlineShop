@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Application.Infrastructure.Mapping;
 using Models;
+using Models.Enums;
 
 namespace Application.Areas.Admin.Models
 {
@@ -15,6 +16,9 @@ namespace Application.Areas.Admin.Models
         [Required]
         [Display(Name = "Category name")]
         public string Name { get; set; }
+
+        [Required]
+        public CategoryType Type { get; set; }
 
         public string Image { get; set; }
     }

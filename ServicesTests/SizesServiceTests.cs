@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Data.Repositories.Contracts;
 using Models;
+using Models.Enums;
 using Moq;
 using Services;
 using Xunit;
@@ -19,14 +20,70 @@ namespace ServicesTests
             var sizeRepo = new Mock<IRepository<Size>>();
             sizeRepo.Setup(r => r.All()).Returns(new List<Size>
             {
-                new Size(),
-                new Size(),
-                new Size()
+                new ClothesSize {Sex = Sex.Men},
+                new ClothesSize(){Sex = Sex.Men},
+                new ClothesSize(){Sex = Sex.Men}
             }.AsQueryable());
 
             var service = new SizesService(sizeRepo.Object, null);
-            var sizes = service.GetSizes();
+            var sizes = service.GetSizes(CategoryType.Clothes, Sex.Men);
             Assert.Equal(3, sizes.Count);
+            sizeRepo.Verify(r => r.All(), Times.Once);
+        }
+
+        [Fact]
+        public void GetSizesShouldReturnSizesInGivenType()
+        {
+            var sizeRepo = new Mock<IRepository<Size>>();
+            sizeRepo.Setup(r => r.All()).Returns(new List<Size>
+            {
+                new ClothesSize(),
+                new ClothesSize(),
+                new ShoesSize {Sex = Sex.Men}
+            }.AsQueryable());
+
+            var service = new SizesService(sizeRepo.Object, null);
+            var sizes = service.GetSizes(CategoryType.Clothes, Sex.Men);
+            Assert.Equal(2, sizes.Count);
+            sizeRepo.Verify(r => r.All(), Times.Once);
+        }
+
+        [Fact]
+        public void GetSizesShouldReturnSizesShouldFilterBySexIfNotTypeClothes()
+        {
+            var sizeRepo = new Mock<IRepository<Size>>();
+            sizeRepo.Setup(r => r.All()).Returns(new List<Size>
+            {
+                new ShoesSize {Sex = Sex.Kids},
+                new ClothesSize {Sex = null},
+                new ShoesSize {Sex = Sex.Men, Name = "32"},
+                new ShoesSize {Sex = Sex.Women},
+            }.AsQueryable());
+
+            var service = new SizesService(sizeRepo.Object, null);
+            var sizes = service.GetSizes(CategoryType.Shoes, Sex.Men);
+            Assert.Equal(1, sizes.Count);
+            sizeRepo.Verify(r => r.All(), Times.Once);
+        }
+
+        [Fact]
+        public void GetSizesShouldReturnSizesShouldFilterBySexIfNotTypeClothesAndOrderByName()
+        {
+            var sizeRepo = new Mock<IRepository<Size>>();
+            sizeRepo.Setup(r => r.All()).Returns(new List<Size>
+            {
+                new ShoesSize {Sex = Sex.Men, Name = "34"},
+                new ClothesSize {Sex = null},
+                new ShoesSize {Sex = Sex.Men, Name = "32"},
+                new ShoesSize {Sex = Sex.Men,  Name = "33"},
+            }.AsQueryable());
+
+            var service = new SizesService(sizeRepo.Object, null);
+            var sizes = service.GetSizes(CategoryType.Shoes, Sex.Men).ToList();
+            Assert.Equal(3, sizes.Count);
+            Assert.Equal("32", sizes.First().Name);
+            Assert.Equal("33", sizes[1].Name);
+            Assert.Equal("34", sizes.Last().Name);
             sizeRepo.Verify(r => r.All(), Times.Once);
         }
 

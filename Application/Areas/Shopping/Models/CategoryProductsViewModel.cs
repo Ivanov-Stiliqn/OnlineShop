@@ -12,9 +12,9 @@ namespace Application.Areas.Shopping.Models
 
         public ICollection<ProductViewModel> MostOrderedProducts { get; set; }
 
-        public ICollection<MenuItemViewModel> Categories { get; set; }
+        public ICollection<CategoryListItemViewModel> Categories { get; set; }
 
-        public MenuItemViewModel CurrentCategory { get; set; }
+        public CategoryListItemViewModel CurrentCategory { get; set; }
 
         public ICollection<SizeListItemViewModel> Sizes { get; set; }
 

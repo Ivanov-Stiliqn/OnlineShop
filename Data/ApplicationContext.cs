@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.Enums;
 
 namespace Data
 {
@@ -57,36 +58,8 @@ namespace Data
             builder.Entity<Report>().HasOne(r => r.ReportedUser).WithMany(u => u.Reports)
                 .HasForeignKey(r => r.ReportedUserId);
 
-            builder.Entity<Size>().HasData(new Size()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "S"
-                },
-                new Size()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "M"
-                },
-                new Size()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "L"
-                },
-                new Size()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "XL"
-                },
-                new Size()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "XS"
-                },
-                new Size()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "XXL"
-                });
+            builder.Entity<ClothesSize>().HasBaseType<Size>();
+            builder.Entity<ShoesSize>().HasBaseType<Size>();
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Application.Infrastructure.Mapping;
 using Models;
+using Models.Enums;
 
 namespace Application.Areas.Shopping.Models
 {
@@ -12,5 +13,7 @@ namespace Application.Areas.Shopping.Models
         public string Id { get; set; }
 
         public string Name { get; set; }
+
+        public CategoryType Type { get; set; }
     }
 }

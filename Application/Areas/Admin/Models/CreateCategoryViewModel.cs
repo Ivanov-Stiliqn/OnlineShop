@@ -7,6 +7,7 @@ using Application.Infrastructure.Mapping;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using Models;
+using Models.Enums;
 
 namespace Application.Areas.Admin.Models
 {
@@ -15,6 +16,9 @@ namespace Application.Areas.Admin.Models
         [Required]
         [Display(Name = "Category name")]
         public string Name { get; set; }
+
+        [Required]
+        public CategoryType Type { get; set; }
 
         [Required(ErrorMessage = "Please upload a image.")]
         public IFormFile ImageFile { get; set; }

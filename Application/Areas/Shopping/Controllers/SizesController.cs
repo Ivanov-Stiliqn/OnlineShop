@@ -8,6 +8,7 @@ using Application.Infrastructure.Mapping;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using Models.Enums;
 using Services.Contracts;
 
 namespace Application.Areas.Shopping.Controllers
@@ -21,22 +22,22 @@ namespace Application.Areas.Shopping.Controllers
             this.service = service;
         }
 
-        public IActionResult Create(string productId)
+        public IActionResult Create(string productId, CategoryType type, Sex sex)
         {
             var model = new CreateSizeViewModel
             {
-                AllSizes = service.GetSizes().Select(s => s.Map<Size, SizeListItemViewModel>()).ToList()
+                AllSizes = service.GetSizes(type, sex).Select(s => s.Map<Size, SizeListItemViewModel>()).ToList()
             };
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateSizeViewModel model, string submit, string productId)
+        public async Task<IActionResult> Create(CreateSizeViewModel model, string submit, string productId, CategoryType type, Sex sex)
         {
             if (!ModelState.IsValid)
             {
-                model.AllSizes = service.GetSizes().Select(s => s.Map<Size, SizeListItemViewModel>()).ToList();
+                model.AllSizes = service.GetSizes(type, sex).Select(s => s.Map<Size, SizeListItemViewModel>()).ToList();
                 return View(model);
             }
 
@@ -59,7 +60,13 @@ namespace Application.Areas.Shopping.Controllers
                 return RedirectToAction(nameof(ProductsController.Index), "Products");
             }
 
-            return RedirectToAction(nameof(Create), new { productId = parsedProductId });
+            return RedirectToAction(nameof(Create), new { productId = parsedProductId, type, sex});
+        }
+
+        [HttpPost]
+        public ICollection<Size> GetSizes(CategoryType type, Sex sex)
+        {
+            return service.GetSizes(type, sex);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿@model CategoryProductsViewModel
+﻿@using Models.Enums
+@model CategoryProductsViewModel
 
 <section class="banner_area">
     <div class="banner_inner d-flex align-items-center">
@@ -23,19 +24,19 @@
                     <div class="left_dorp">
                         @if (!string.IsNullOrEmpty(Model.Pagination.Price))
                         {
-                        <h4>
-                            <span><em>Products in range: @Model.Pagination.Price</em>. </span>
-                            @if (!string.IsNullOrEmpty(Model.Pagination.Size))
-                            {
-                                <span><em>Size: @Model.Pagination.Size</em>. </span>
-                            }
-                            
-                            @if (Model.Pagination.Sex != 0)
-                            {
-                                <span><em>Gender: @Model.Pagination.Gender</em>. </span>
-                            }
+                            <h4>
+                                <span><em>Products in range: @Model.Pagination.Price</em>. </span>
+                                @if (!string.IsNullOrEmpty(Model.Pagination.Size))
+                                {
+                                    <span><em>Size: @Model.Pagination.Size</em>. </span>
+                                }
 
-                        </h4>
+                                @if (Model.Pagination.Sex != 0)
+                                {
+                                    <span><em>Gender: @Model.Pagination.Gender</em>. </span>
+                                }
+
+                            </h4>
                         }
                     </div>
                     <div class="right_page ml-auto">
@@ -90,23 +91,25 @@
                                 <h3>Product Filters</h3>
                             </div>
                             <div class="widgets_inner">
-                                <h4>Size</h4>
-                                <ul class="list">
-                                    @foreach (var size in Model.Sizes)
-                                    {
-                                        <li><input type="radio" name="sizeId" value="@size.Id" />@size.Name</li>
-                                    }
-                                </ul>
-                            </div>
-                            <div class="widgets_inner">
                                 <h4>Gender</h4>
                                 <ul class="list">
-                                    <li><input type="radio" name="sex" value="1" />Men</li>
-                                    <li><input type="radio" name="sex" value="2" />Women</li>
-                                    <li><input type="radio" name="sex" value="3" />Kids</li>
+                                    <li><input type="radio" name="sex" class="sex" value="1" />Men</li>
+                                    <li><input type="radio" name="sex" class="sex" value="2" />Women</li>
+                                    <li><input type="radio" name="sex" class="sex" value="3" />Kids</li>
                                 </ul>
                             </div>
-
+                            <div class="widgets_inner sizesContainer">
+                                @if (Model.CurrentCategory.Type == CategoryType.Clothes)
+                                {
+                                    <h4>Size</h4>
+                                    <ul class="list">
+                                        @foreach (var size in Model.Sizes)
+                                        {
+                                            <li><input type="radio" name="sizeId" value="@size.Id" />@size.Name</li>
+                                        }
+                                    </ul>
+                                }
+                            </div>
                             <div class="widgets_inner">
                                 <h4>Price</h4>
                                 <div class="range_item">
@@ -135,3 +138,44 @@
 <!--================End Category Product Area =================-->
 <!--================Most Product Area =================-->
 <partial name="_MostOrderedProductsSection" model="@Model.MostOrderedProducts" />
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function() {
+            $('.sex').on("change",
+                function(e) {
+                    let value = $(this).val();
+                    if ("@Model.CurrentCategory.Type.ToString()" !== "Clothes") {
+                        $.ajax({
+                            type: "POST",
+                            url: '/Shopping/Sizes/GetSizes',
+                            data: ({ type: "@Model.CurrentCategory.Type.ToString()", sex: value }),
+                            success: function(data) {
+                                if (data.length > 0) {
+                                    var output = "<h4>Sizes</h4><ul class='list'>";
+                                    for (var size of data) {
+                                        output +=
+                                            "<li><input type='radio' name='sizeId' value='" +
+                                            size.id +
+                                            "' />" +
+                                            size.name +
+                                            "</li>";
+                                    }
+                                    output += "</ul>";
+                                    $('.sizesContainer').html(output);
+                                } else {
+                                    $('.sizesContainer').html('');
+                                }
+                            },
+                            error: function() {
+                                alert('Error occured');
+                            }
+                        });
+                    }
+                   
+                    e.preventDefault();
+                });
+        });
+    </script>
+}

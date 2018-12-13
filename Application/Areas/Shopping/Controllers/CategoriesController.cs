@@ -29,7 +29,7 @@ namespace Application.Areas.Shopping.Controllers
         public async Task<IActionResult> Products(string categoryId, string price, string sizeId, Sex sex, int page = 1)
         {
             var check = Guid.TryParse(categoryId, out Guid parsedCategoryId);
-            var categories = this.categoriesService.GetCategories().Select(c => c.Map<Category, MenuItemViewModel>()).ToList();
+            var categories = this.categoriesService.GetCategories().Select(c => c.Map<Category, CategoryListItemViewModel>()).ToList();
             var category = categories.FirstOrDefault(c => c.Id == categoryId);
             if (!check || category == null)
             {
@@ -85,7 +85,7 @@ namespace Application.Areas.Shopping.Controllers
             var previuous = Math.Max(page - 1, first);
             var next = Math.Min(page + 1, last);
 
-            var sizes = this.sizesService.GetSizes().Select(s => s.Map<Size, SizeListItemViewModel>()).ToList();
+            var sizes = this.sizesService.GetSizes(category.Type, sex).Select(s => s.Map<Size, SizeListItemViewModel>()).ToList();
             var currentSize = sizes.Where(s => s.Id == sizeId).Select(s => s.Name).FirstOrDefault();
 
             var model = new CategoryProductsViewModel
