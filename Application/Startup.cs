@@ -58,6 +58,8 @@ namespace Application
 
             services.AddScoped(typeof(IRepository<>), typeof(DbRepository<>));
 
+            services.AddMemoryCache();
+
             services.AddMvc(config =>
             {
                 config.ModelBinderProviders.Insert(0, new InvariantDecimalModelBinderProvider());

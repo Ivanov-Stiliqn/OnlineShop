@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,7 @@ using AutoMapper.QueryableExtensions;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Models;
 using Services.Contracts;
 
@@ -17,19 +19,22 @@ namespace Application.Areas.Shopping.Controllers
     public class ProductsController : ShoppingAreaController
     {
         private readonly Cloudinary cloudinary;
+        private readonly IMemoryCache memoryCache;
         private readonly ICategoriesService categoriesService;
         private readonly IProductsService productsService;
         private readonly IReviewService reviewService;
         private readonly IUsersService usersService;
 
         public ProductsController(
-            Cloudinary cloudinary, 
+            Cloudinary cloudinary,
+            IMemoryCache memoryCache,
             ICategoriesService categoriesService, 
             IProductsService productsService,
             IReviewService reviewService,
             IUsersService usersService)
         {
             this.cloudinary = cloudinary;
+            this.memoryCache = memoryCache;
             this.categoriesService = categoriesService;
             this.productsService = productsService;
             this.reviewService = reviewService;
@@ -38,11 +43,22 @@ namespace Application.Areas.Shopping.Controllers
 
         public IActionResult Index()
         {
+            ICollection<ProductViewModel> mostOrderedProductsCache;
+            if (!this.memoryCache.TryGetValue("MostOrderedProducts", out mostOrderedProductsCache))
+            {
+                mostOrderedProductsCache = this.productsService.GetMostOrderedProducts()
+                    .Select(p => p.Map<Product, ProductViewModel>()).ToList();
+
+                MemoryCacheEntryOptions memoryCacheOptions = new MemoryCacheEntryOptions();
+                memoryCacheOptions.AbsoluteExpiration = DateTime.UtcNow.AddMinutes(5);
+                this.memoryCache.Set<ICollection<ProductViewModel>>("MostOrderedProducts", mostOrderedProductsCache, memoryCacheOptions);
+            }
+
             var model = new HomeViewModel()
             {
                 Latest = this.productsService.GetLatestProducts().Select(p => p.Map<Product, ProductViewModel>()).ToList(),
                 MostViewed = this.productsService.GetMostViewedProducts().Select(p => p.Map<Product, ProductViewModel>()).ToList(),
-                MostOrderedProducts = this.productsService.GetMostOrderedProducts().Select(p => p.Map<Product, ProductViewModel>()).ToList(),
+                MostOrderedProducts = mostOrderedProductsCache,
                 TopProduct = this.productsService.GetTopProduct().Map<Product, TopProductViewModel>(),
                 TopCategories = this.categoriesService.GetTopCategories().Select(c => c.Map<Category, CategoryViewModel>()).ToList()
             };
@@ -101,6 +117,17 @@ namespace Application.Areas.Shopping.Controllers
 
         public async Task<IActionResult> Details(string id)
         {
+            ICollection<ProductViewModel> mostOrderedProductsCache;
+            if (!this.memoryCache.TryGetValue("MostOrderedProducts", out mostOrderedProductsCache))
+            {
+                mostOrderedProductsCache = this.productsService.GetMostOrderedProducts()
+                    .Select(p => p.Map<Product, ProductViewModel>()).ToList();
+
+                MemoryCacheEntryOptions memoryCacheOptions = new MemoryCacheEntryOptions();
+                memoryCacheOptions.AbsoluteExpiration = DateTime.UtcNow.AddMinutes(5);
+                this.memoryCache.Set<ICollection<ProductViewModel>>("MostOrderedProducts", mostOrderedProductsCache, memoryCacheOptions);
+            }
+
             var product = await this.productsService.GetProduct(id, true);
             if (product == null)
             {
@@ -113,7 +140,7 @@ namespace Application.Areas.Shopping.Controllers
             var model = new ProductDetailsPageViewModel
             {
                 Product = details,
-                MostOrderedProducts = this.productsService.GetMostOrderedProducts().Select(p => p.Map<Product, ProductViewModel>()).ToList()
+                MostOrderedProducts = mostOrderedProductsCache
             };
 
             this.TempData["CurrentProductId"] = id;
@@ -131,6 +158,17 @@ namespace Application.Areas.Shopping.Controllers
 
             if (!this.ModelState.IsValid)
             {
+                ICollection<ProductViewModel> mostOrderedProductsCache;
+                if (!this.memoryCache.TryGetValue("MostOrderedProducts", out mostOrderedProductsCache))
+                {
+                    mostOrderedProductsCache = this.productsService.GetMostOrderedProducts()
+                        .Select(p => p.Map<Product, ProductViewModel>()).ToList();
+
+                    MemoryCacheEntryOptions memoryCacheOptions = new MemoryCacheEntryOptions();
+                    memoryCacheOptions.AbsoluteExpiration = DateTime.UtcNow.AddMinutes(5);
+                    this.memoryCache.Set<ICollection<ProductViewModel>>("MostOrderedProducts", mostOrderedProductsCache, memoryCacheOptions);
+                }
+
                 var product = await this.productsService.GetProduct(id, false);
                 if (product == null)
                 {
@@ -141,8 +179,7 @@ namespace Application.Areas.Shopping.Controllers
                 var details = product.Map<Product, ProductDetailsViewModel>();
 
                 model.Product = details;
-                model.MostOrderedProducts = this.productsService.GetMostOrderedProducts()
-                    .Select(p => p.Map<Product, ProductViewModel>()).ToList();
+                model.MostOrderedProducts = mostOrderedProductsCache;
 
                 this.TempData["CurrentProductId"] = id;
                 return View(model);

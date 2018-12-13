@@ -7,6 +7,7 @@ using Application.Infrastructure.Mapping;
 using Application.Models;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Models;
 using Models.Enums;
 using Services.Contracts;
@@ -18,12 +19,18 @@ namespace Application.Areas.Shopping.Controllers
         private readonly IProductsService productsService;
         private readonly ICategoriesService categoriesService;
         private readonly ISizesService sizesService;
+        private readonly IMemoryCache memoryCache;
 
-        public CategoriesController(IProductsService productsService, ICategoriesService categoriesService, ISizesService sizesService)
+        public CategoriesController(
+            IProductsService productsService, 
+            ICategoriesService categoriesService, 
+            ISizesService sizesService,
+            IMemoryCache memoryCache)
         {
             this.productsService = productsService;
             this.categoriesService = categoriesService;
             this.sizesService = sizesService;
+            this.memoryCache = memoryCache;
         }
 
         public async Task<IActionResult> Products(string categoryId, string price, string sizeId, Sex sex, int page = 1)
@@ -88,11 +95,21 @@ namespace Application.Areas.Shopping.Controllers
             var sizes = this.sizesService.GetSizes(category.Type, sex).Select(s => s.Map<Size, SizeListItemViewModel>()).ToList();
             var currentSize = sizes.Where(s => s.Id == sizeId).Select(s => s.Name).FirstOrDefault();
 
+            ICollection<ProductViewModel> mostOrderedProductsCache;
+            if (!this.memoryCache.TryGetValue("MostOrderedProducts", out mostOrderedProductsCache))
+            {
+                mostOrderedProductsCache = this.productsService.GetMostOrderedProducts()
+                    .Select(p => p.Map<Product, ProductViewModel>()).ToList();
+
+                MemoryCacheEntryOptions memoryCacheOptions = new MemoryCacheEntryOptions();
+                memoryCacheOptions.AbsoluteExpiration = DateTime.UtcNow.AddMinutes(5);
+                this.memoryCache.Set<ICollection<ProductViewModel>>("MostOrderedProducts", mostOrderedProductsCache, memoryCacheOptions);
+            }
+
             var model = new CategoryProductsViewModel
             {
                 Products = products,
-                MostOrderedProducts =
-                    this.productsService.GetMostOrderedProducts().Select(p => p.Map<Product, ProductViewModel>()).ToList(),
+                MostOrderedProducts = mostOrderedProductsCache,
                 Pagination = new Pagination
                 {
                     First = first,
