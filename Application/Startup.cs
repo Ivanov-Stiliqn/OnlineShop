@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Hubs;
 using Application.Infrastructure.Extensions;
 using Application.Infrastructure.Helpers;
 using Application.Infrastructure.Mapping;
@@ -60,6 +61,8 @@ namespace Application
 
             services.AddMemoryCache();
 
+            services.AddSignalR();
+
             services.AddMvc(config =>
             {
                 config.ModelBinderProviders.Insert(0, new InvariantDecimalModelBinderProvider());
@@ -89,6 +92,8 @@ namespace Application
             app.UseCookiePolicy();
 
             app.UseAuthentication();
+
+            app.UseSignalR(routes => routes.MapHub<ChatHub>("/chat"));
 
             app.UseMvc(routes =>
             {

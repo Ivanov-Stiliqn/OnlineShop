@@ -21,63 +21,132 @@
 </head>
 <body>
 
-@await Component.InvokeAsync("Navigation")
+    @await Component.InvokeAsync("Navigation")
 
-@RenderBody();
+    @RenderBody();
 
-<partial name="_Footer"/>
+    <partial name="_Chat" />
+    <partial name="_Footer" />
 
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="~/js/jquery-3.2.1.min.js"></script>
-<script src="~/js/popper.js"></script>
-<script src="~/js/bootstrap.min.js"></script>
-<script src="~/js/stellar.js"></script>
-<script src="~/lib/lightbox/simpleLightbox.min.js"></script>
-<script src="~/lib/nice-select/js/jquery.nice-select.min.js"></script>
-<script src="~/lib/isotope/imagesloaded.pkgd.min.js"></script>
-<script src="~/lib/isotope/isotope-min.js"></script>
-<script src="~/lib/owl-carousel/owl.carousel.min.js"></script>
-<script src="~/js/jquery.ajaxchimp.min.js"></script>
-<script src="~/lib/counter-up/jquery.waypoints.min.js"></script>
-<script src="~/lib/flipclock/timer.js"></script>
-<script src="~/lib/counter-up/jquery.counterup.js"></script>
-<script src="~/js/mail-script.js"></script>
-<script src="~/lib/jquery-ui/jquery-ui.js"></script>
-<script src="~/js/theme.js"></script>
-<script type="text/javascript">
- 
-    $(document).ready(function () {
-        $('.add-to-whishlist').on("click", function(e){
- 
-            let id = $(e.delegateTarget).data('id');
-            $.ajax({
-                type: "GET",
-                url: '/Profile/Wishlist/Add',
-                data: ({ productId: id }),
-                success: function(data) {
-                    if (data) {
-                        alert('Product added to wishlist');
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="~/js/jquery-3.2.1.min.js"></script>
+    <script src="~/js/popper.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/js/stellar.js"></script>
+    <script src="~/lib/lightbox/simpleLightbox.min.js"></script>
+    <script src="~/lib/nice-select/js/jquery.nice-select.min.js"></script>
+    <script src="~/lib/isotope/imagesloaded.pkgd.min.js"></script>
+    <script src="~/lib/isotope/isotope-min.js"></script>
+    <script src="~/lib/owl-carousel/owl.carousel.min.js"></script>
+    <script src="~/js/jquery.ajaxchimp.min.js"></script>
+    <script src="~/lib/counter-up/jquery.waypoints.min.js"></script>
+    <script src="~/lib/flipclock/timer.js"></script>
+    <script src="~/lib/counter-up/jquery.counterup.js"></script>
+    <script src="~/js/mail-script.js"></script>
+    <script src="~/lib/jquery-ui/jquery-ui.js"></script>
+    <script src="~/js/theme.js"></script>
+    <script src="~/lib/@@aspnet/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/site.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            var connection =
+                new signalR.HubConnectionBuilder()
+                    .withUrl("/chat")
+                    .build();
+
+            connection.on("NewMessage",
+                function (message) {
+                    var chatContainer = $('.chat_container');
+                    if (chatContainer.css('display') === 'none') {
+                        chatContainer.toggle(500);
+                    }
+
+                    var chatInfo = '';
+                    if ("@User.Identity.Name" !== message.user) {
+                        $('.panel-title').text(message.user);
+                        chatInfo = ` <div class="row msg_container base_receive">
+                                        <div class="col-md-2 col-xs-2 avatar">
+                                            <img src="http://www.bitrebels.com/wp-content/uploads/2011/02/Original-Facebook-Geek-Profile-Avatar-1.jpg" class="img-responsive chat_img">
+                                        </div>
+                                        <div class="col-md-10 col-xs-10">
+                                            <div class="messages msg_receive">
+                                                <p>
+                                                     ${message.text}
+                                                </p>
+                                                <time datetime="${Date.now()}">Timothy • 51 min</time>
+                                            </div>
+                                        </div>
+                                    </div>`;
                     } else {
-                        alert('Product does not exist.');
-                    };
+                        chatInfo = `
+                                <div class="row msg_container base_sent">
+                                    <div class="col-md-10 col-xs-10 ">
+                                        <div class="messages msg_sent">
+                                            <p>
+                                                ${message.text}
+                                            </p>
+                                            <time datetime="${Date.now()}">Timothy • 51 min</time>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 col-xs-2 avatar">
+                                        <img src="http://www.bitrebels.com/wp-content/uploads/2011/02/Original-Facebook-Geek-Profile-Avatar-1.jpg" class="img-responsive chat_img">
+                                    </div>
+                                </div>`;
+                    }
 
-                },
-                error: function() {
-                    alert('Error occured');
-                }
+                    $("#messagesList").append(chatInfo);
+                });
+            $("#btn-chat").click(function () {
+                var message = $("#btn-input").val();
+                var user = $('.panel-title').text();
+                connection.invoke("Send", message, user);
             });
 
-            e.preventDefault();
-        });
+            connection.start()
+                .catch(function (err) {
+                    return console.error(err.toString());
+                });
 
-        $('.confirm-delete').click(function(e) {
-            if (!confirm('Are you sure you want to delete')) {
+            $(".open-chat").click(function (e) {
+                var username = $(this).text();
+                $('.panel-title').text(username);
+                $('.chat_container').toggle(500);
+
                 e.preventDefault();
-            }
+            });
+
+            $('.add-to-whishlist').on("click", function (e) {
+
+                let id = $(e.delegateTarget).data('id');
+                $.ajax({
+                    type: "GET",
+                    url: '/Profile/Wishlist/Add',
+                    data: ({ productId: id }),
+                    success: function (data) {
+                        if (data) {
+                            alert('Product added to wishlist');
+                        } else {
+                            alert('Product does not exist.');
+                        };
+
+                    },
+                    error: function () {
+                        alert('Error occured');
+                    }
+                });
+
+                e.preventDefault();
+            });
+
+            $('.confirm-delete').click(function (e) {
+                if (!confirm('Are you sure you want to delete')) {
+                    e.preventDefault();
+                }
+            });
         });
-    });
-</script>
-@RenderSection("Scripts", required: false)
+    </script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
