@@ -39,5 +39,13 @@
             input.val('');
             $.connection.invoke("Send", message, user);
         });
+
+        $(".chat_input").keypress(function(e) {
+            var key = e.which;
+            if (key == 13) {
+                $('.btn-chat').click();
+                return false;
+            }
+        });
     });
 </script>
