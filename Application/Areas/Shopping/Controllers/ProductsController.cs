@@ -5,10 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Areas.Shopping.Models;
+using Application.Infrastructure.Helpers;
 using Application.Infrastructure.Mapping;
 using AutoMapper.QueryableExtensions;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Models;
@@ -296,6 +298,38 @@ namespace Application.Areas.Shopping.Controllers
 
             this.TempData["Success"] = "Product removed successfully.";
             return RedirectToAction(isHome ? nameof(Index) : nameof(MyProducts));
+        }
+
+        [Authorize]
+        public IActionResult Message(string username)
+        {
+            var chats = this.HttpContext.Session.GetObjectFromJson<int>("ChatsCount");
+            int position = 10;
+
+            chats = chats == 4 ? 0 : chats; 
+            if (chats > 0)
+            {
+                position += 440 * chats;
+            }
+
+            var model = new ChatViewModel()
+            {
+                Id = "chat_window_" + chats + 1,
+                Position = position + "px",
+                Username = username
+            };
+
+            this.HttpContext.Session.SetObjectAsJson("ChatsCount", chats + 1);
+
+            return PartialView("_Chat", model);
+        }
+
+        [Authorize]
+        public void RemoveChat()
+        {
+            var chatsCount = this.HttpContext.Session.GetObjectFromJson<int>("ChatsCount");
+            chatsCount -= 1;
+            this.HttpContext.Session.SetObjectAsJson("ChatsCount", chatsCount);
         }
     }
 }

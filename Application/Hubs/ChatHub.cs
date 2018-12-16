@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Application.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
@@ -23,8 +24,9 @@ namespace Application.Hubs
             await this.Clients.Users(user.Id, currentUser.Id).SendAsync("NewMessage", new Message
             {
                 User = this.Context.User.Identity.Name,
+                Receiver = user.UserName,
                 Text = message,
             });
-        }
+        } 
     }
 }

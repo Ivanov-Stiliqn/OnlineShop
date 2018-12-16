@@ -26,7 +26,13 @@ $(document).on('click', '#new_chat', function (e) {
     clone.css("margin-left", size_total);
 });
 $(document).on('click', '.icon_close', function (e) {
-    //$(this).parent().parent().parent().parent().remove();
-    $(".chat_container").toggle(500);
-    $('#messagesList').innerHTML = '';
+    $(this).parent().parent().parent().parent().parent().parent().parent().parent().remove();
+    $.ajax({
+        type: "GET",
+        url: '/Shopping/Products/RemoveChat',
+        error: function (e) {
+            console.log(e);
+        }
+    });
+    e.preventDefault();
 });

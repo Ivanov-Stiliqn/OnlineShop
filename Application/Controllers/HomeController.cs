@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Application.Areas.Shopping.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Application.Models;
+using Microsoft.AspNetCore.Authorization;
 using Services.Contracts;
 
 namespace Application.Controllers

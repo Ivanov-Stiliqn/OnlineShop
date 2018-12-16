@@ -8,6 +8,8 @@ namespace Models
     {
         public string User { get; set; }
 
+        public string Receiver { get; set; }
+
         public string Text { get; set; }
     }
 }

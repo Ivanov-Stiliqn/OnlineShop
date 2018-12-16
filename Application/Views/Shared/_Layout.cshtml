@@ -25,7 +25,7 @@
 
     @RenderBody();
 
-    <partial name="_Chat" />
+    <div id="chats"></div>
     <partial name="_Footer" />
 
     <!-- Optional JavaScript -->
@@ -58,17 +58,13 @@
 
             connection.on("NewMessage",
                 function (message) {
-                    var chatContainer = $('.chat_container');
-                    if (chatContainer.css('display') === 'none') {
-                        chatContainer.toggle(500);
-                    }
-
                     var chatInfo = '';
-                    if ("@User.Identity.Name" !== message.user) {
-                        $('.panel-title').text(message.user);
+                    if ("@User.Identity.Name" === message.receiver) {
+
+                        var messageList = $(`.panel-title:contains(${message.user})`).parent().parent().parent().parent().find('.messagesList');
                         chatInfo = ` <div class="row msg_container base_receive">
                                         <div class="col-md-2 col-xs-2 avatar">
-                                            <img src="http://www.bitrebels.com/wp-content/uploads/2011/02/Original-Facebook-Geek-Profile-Avatar-1.jpg" class="img-responsive chat_img">
+                                            <img src="http://iconhot.com/icon/png/bunch-cool-bluish-icons/512/group-18.png" class="img-responsive chat_img">
                                         </div>
                                         <div class="col-md-10 col-xs-10">
                                             <div class="messages msg_receive">
@@ -79,7 +75,31 @@
                                             </div>
                                         </div>
                                     </div>`;
+
+                        if ($(messageList).length > 0) {
+                            messageList.append(chatInfo);
+                            messageList.scrollTop($(messageList)[0].scrollHeight);
+                        } else {
+                            $.ajax({
+                                type: "GET",
+                                url: '/Shopping/Products/Message',
+                                data: ({ username: message.user }),
+                                success: function (data) {
+                                    $('#chats').append(data);
+
+                                    var receiverMessages = $(`.panel-title:contains(${message.user})`).parent().parent().parent().parent().find('.messagesList');
+                                    receiverMessages.append(chatInfo);
+                                    receiverMessages.scrollTop($(receiverMessages)[0].scrollHeight);
+                                },
+                                error: function(e) {
+                                    console.log(e);
+                                }
+                            });
+                           
+                        }
+  
                     } else {
+                        var senderMessages = $(`.panel-title:contains(${message.receiver})`).parent().parent().parent().parent().find('.messagesList');
                         chatInfo = `
                                 <div class="row msg_container base_sent">
                                     <div class="col-md-10 col-xs-10 ">
@@ -91,28 +111,38 @@
                                         </div>
                                     </div>
                                     <div class="col-md-2 col-xs-2 avatar">
-                                        <img src="http://www.bitrebels.com/wp-content/uploads/2011/02/Original-Facebook-Geek-Profile-Avatar-1.jpg" class="img-responsive chat_img">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/768px-User_icon_2.svg.png" class="img-responsive chat_img">
                                     </div>
                                 </div>`;
-                    }
 
-                    $("#messagesList").append(chatInfo);
+                        senderMessages.append(chatInfo);
+                        senderMessages.scrollTop($(senderMessages)[0].scrollHeight);
+                    } 
                 });
-            $("#btn-chat").click(function () {
-                var message = $("#btn-input").val();
-                var user = $('.panel-title').text();
-                connection.invoke("Send", message, user);
-            });
 
             connection.start()
                 .catch(function (err) {
                     return console.error(err.toString());
                 });
 
+            $.connection = connection;
+
             $(".open-chat").click(function (e) {
                 var username = $(this).text();
-                $('.panel-title').text(username);
-                $('.chat_container').toggle(500);
+                var chat = $(`.panel-title:contains(${username})`);
+                if (chat.length === 0) {
+                    $.ajax({
+                        type: "GET",
+                        url: '/Shopping/Products/Message',
+                        data: ({ username }),
+                        success: function (data) {
+                            $('#chats').append(data);
+                        },
+                        error: function (e) {
+                            console.log(e);
+                        }
+                    });
+                }
 
                 e.preventDefault();
             });
