@@ -40,7 +40,7 @@ namespace Services
 
         public ICollection<Product> GetLatestProducts()
         {
-            return this.productsRepository.All().OrderBy(p => p.DateOfCreation).Take(8).ToList();
+            return this.productsRepository.All().OrderByDescending(p => p.DateOfCreation).Take(8).ToList();
         }
 
         public ICollection<Product> GetMostViewedProducts()

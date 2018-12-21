@@ -303,7 +303,7 @@ namespace Application.Areas.Shopping.Controllers
         [Authorize]
         public IActionResult Message(string username)
         {
-            var chats = this.HttpContext.Session.GetObjectFromJson<int>("ChatsCount");
+            var chats = this.HttpContext.Session.GetObjectFromJson<int>("ChatsCount" + this.User.Identity.Name);
             int position = 10;
 
             chats = chats == 4 ? 0 : chats; 
@@ -319,7 +319,7 @@ namespace Application.Areas.Shopping.Controllers
                 Username = username
             };
 
-            this.HttpContext.Session.SetObjectAsJson("ChatsCount", chats + 1);
+            this.HttpContext.Session.SetObjectAsJson("ChatsCount" + this.User.Identity.Name, chats + 1);
 
             return PartialView("_Chat", model);
         }
@@ -327,9 +327,15 @@ namespace Application.Areas.Shopping.Controllers
         [Authorize]
         public void RemoveChat()
         {
-            var chatsCount = this.HttpContext.Session.GetObjectFromJson<int>("ChatsCount");
+            var chatsCount = this.HttpContext.Session.GetObjectFromJson<int>("ChatsCount" + this.User.Identity.Name);
             chatsCount -= 1;
-            this.HttpContext.Session.SetObjectAsJson("ChatsCount", chatsCount);
+            this.HttpContext.Session.SetObjectAsJson("ChatsCount" + this.User.Identity.Name, chatsCount);
+        }
+
+        [Authorize]
+        public void ClearChats()
+        {
+            this.HttpContext.Session.SetObjectAsJson("ChatsCount" + this.User.Identity.Name, 0);
         }
     }
 }

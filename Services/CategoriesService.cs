@@ -75,7 +75,7 @@ namespace Services
             this.SearchedProductsCount = products.Count;
 
             await this.categoryRepository.SaveChangesAsync();
-            return products.OrderBy(p => p.DateOfCreation).Skip(skip).Take(take).ToList();
+            return products.OrderByDescending(p => p.DateOfCreation).Skip(skip).Take(take).ToList();
         }
 
         public Category GetCategory(string id)

@@ -70,7 +70,7 @@ namespace Services
                     .ThenInclude(o => o.Buyer)
                 .FirstOrDefault(u => u.UserName == username);
 
-            return user.SellOrders.OrderBy(o => o.DateOfCreation).ToList();
+            return user.SellOrders.OrderByDescending(o => o.DateOfCreation).ToList();
         }
 
         public async Task<bool> AcceptOrder(string id, string username)
@@ -131,7 +131,7 @@ namespace Services
                     .ThenInclude(o => o.Seller)
                 .FirstOrDefault(u => u.UserName == username);
 
-            return user.PurchaseOrders.OrderBy(o => o.DateOfCreation).ToList();
+            return user.PurchaseOrders.OrderByDescending(o => o.DateOfCreation).ToList();
         }
 
         public Order GetOrderDetails(string id)
@@ -156,7 +156,7 @@ namespace Services
                 .All()
                 .Include(o => o.Buyer)
                 .Include(o => o.Seller)
-                .OrderBy(o => o.DateOfCreation)
+                .OrderByDescending(o => o.DateOfCreation)
                 .ToList();
         }
     }

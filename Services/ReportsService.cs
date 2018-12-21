@@ -27,7 +27,7 @@ namespace Services
             return this.reportRepository.All()
                 .Include(r => r.Reporter)
                 .Include(r => r.ReportedUser)
-                .OrderBy(o => o.DateOfCreation)
+                .OrderByDescending(o => o.DateOfCreation)
                 .ToList();
         }
 

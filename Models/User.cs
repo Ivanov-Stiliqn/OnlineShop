@@ -15,6 +15,8 @@ namespace Models
             this.Reviews = new List<Review>();
             this.PurchaseOrders = new List<Order>();
             this.SellOrders = new List<Order>();
+            this.MessagesSent = new List<Message>();
+            this.MessagesReceived = new List<Message>();
         }
 
         public ICollection<Product> MyProducts { get; set; }
@@ -34,5 +36,9 @@ namespace Models
         public ICollection<Order> PurchaseOrders { get; set; }
 
         public ICollection<Order> SellOrders { get; set; }
+
+        public ICollection<Message> MessagesSent { get; set; }
+
+        public ICollection<Message> MessagesReceived { get; set; }
     }
 }

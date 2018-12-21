@@ -177,7 +177,7 @@ namespace ServicesTests
         }
 
         [Fact]
-        public async Task GetProductsByCategoryShouldOrderAscendingAndIncreaseViewsWithoutFilters()
+        public async Task GetProductsByCategoryShouldOrderDescendingAndIncreaseViewsWithoutFilters()
         {
             Guid categoryId = Guid.NewGuid();
             int skip = 0;
@@ -218,8 +218,8 @@ namespace ServicesTests
 
             Assert.Equal(5, productsTotalCount);
             Assert.Equal(3, products.Count);
-            Assert.Equal("test 5", products.First().Name);
-            Assert.Equal("test 4", products.ToList()[1].Name);
+            Assert.Equal("test 3", products.First().Name);
+            Assert.Equal("test 1", products.ToList()[1].Name);
             Assert.Equal("test 1", products.Last().Name);
             Assert.Contains(categories, c => c.Views > 1);
             categoriesRepo.Verify(r => r.All(), Times.Once);
@@ -267,9 +267,9 @@ namespace ServicesTests
 
             Assert.Equal(3, productsTotalCount);
             Assert.Equal(3, products.Count);
-            Assert.Equal("test 5", products.First().Name);
+            Assert.Equal("test 3", products.First().Name);
             Assert.Equal("test 4", products.ToList()[1].Name);
-            Assert.Equal("test 3", products.Last().Name);
+            Assert.Equal("test 5", products.Last().Name);
             Assert.Contains(categories, c => c.Views > 1);
             categoriesRepo.Verify(r => r.All(), Times.Once);
         }
@@ -335,9 +335,9 @@ namespace ServicesTests
 
             Assert.Equal(3, productsTotalCount);
             Assert.Equal(3, products.Count);
-            Assert.Equal("test 1", products.First().Name);
+            Assert.Equal("test 3", products.First().Name);
             Assert.Equal("test 1", products.ToList()[1].Name);
-            Assert.Equal("test 3", products.Last().Name);
+            Assert.Equal("test 1", products.Last().Name);
             Assert.Contains(categories, c => c.Views > 1);
             categoriesRepo.Verify(r => r.All(), Times.Once);
         }
@@ -472,9 +472,9 @@ namespace ServicesTests
 
             Assert.Equal(4, productsTotalCount);
             Assert.Equal(3, products.Count);
-            Assert.Equal("test 5", products.First().Name);
-            Assert.Equal("test 4", products.ToList()[1].Name);
-            Assert.Equal("test 1", products.Last().Name);
+            Assert.Equal("test 3", products.First().Name);
+            Assert.Equal("test 1", products.ToList()[1].Name);
+            Assert.Equal("test 4", products.Last().Name);
             Assert.Contains(categories, c => c.Views > 1);
             categoriesRepo.Verify(r => r.All(), Times.Once);
         }
@@ -547,8 +547,8 @@ namespace ServicesTests
 
             Assert.Equal(2, productsTotalCount);
             Assert.Equal(2, products.Count);
-            Assert.Equal("test 1", products.First().Name);
-            Assert.Equal("test 3", products.Last().Name);
+            Assert.Equal("test 3", products.First().Name);
+            Assert.Equal("test 1", products.Last().Name);
             Assert.Contains(categories, c => c.Views > 1);
             categoriesRepo.Verify(r => r.All(), Times.Once);
         }
@@ -621,8 +621,8 @@ namespace ServicesTests
 
             Assert.Equal(2, productsTotalCount);
             Assert.Equal(2, products.Count);
-            Assert.Equal("test 1", products.First().Name);
-            Assert.Equal("test 3", products.Last().Name);
+            Assert.Equal("test 3", products.First().Name);
+            Assert.Equal("test 1", products.Last().Name);
             Assert.Contains(categories, c => c.Views > 1);
             categoriesRepo.Verify(r => r.All(), Times.Once);
         }

@@ -24,6 +24,8 @@ namespace Data
 
         public DbSet<UserInfo> UserInfos { get; set; }
 
+        public DbSet<Message> Messages { get; set; }
+
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
         {
@@ -40,6 +42,10 @@ namespace Data
             builder.Entity<User>().HasMany(u => u.PurchaseOrders).WithOne(o => o.Buyer).HasForeignKey(u => u.BuyerId);
 
             builder.Entity<User>().HasMany(u => u.SellOrders).WithOne(o => o.Seller).HasForeignKey(u => u.SellerId);
+
+            builder.Entity<User>().HasMany(u => u.MessagesSent).WithOne(m => m.User).HasForeignKey(u => u.UserId);
+
+            builder.Entity<User>().HasMany(u => u.MessagesReceived).WithOne(m => m.Receiver).HasForeignKey(u => u.ReciverId);
 
             builder.Entity<Product>().HasMany(p => p.Orders).WithOne(o => o.Product).HasForeignKey(o => o.ProductId)
                 .OnDelete(DeleteBehavior.SetNull);

@@ -88,8 +88,32 @@
                                     $('#chats').append(data);
 
                                     var receiverMessages = $(`.panel-title:contains(${message.user})`).parent().parent().parent().parent().find('.messagesList');
-                                    receiverMessages.append(chatInfo);
-                                    receiverMessages.scrollTop($(receiverMessages)[0].scrollHeight);
+
+                                    if (message.unReadMessages.length > 0) {
+                                        for (let msg of message.unReadMessages) {
+                                            let unRead = ` <div class="row msg_container base_receive">
+                                                                <div class="col-md-2 col-xs-2 avatar">
+                                                                    <img src="http://iconhot.com/icon/png/bunch-cool-bluish-icons/512/group-18.png" class="img-responsive chat_img">
+                                                                </div>
+                                                                <div class="col-md-10 col-xs-10">
+                                                                    <div class="messages msg_receive">
+                                                                        <p>
+                                                                             ${msg.text}
+                                                                        </p>
+                                                                        <time datetime="${Date.now()}">Timothy • ${msg.dateOfCreation}</time>
+                                                                    </div>
+                                                                </div>
+                                                            </div>`;
+
+                                            receiverMessages.append(unRead);
+                                        }
+
+                                        receiverMessages.scrollTop($(receiverMessages)[0].scrollHeight);
+
+                                    } else {
+                                        receiverMessages.append(chatInfo);
+                                        receiverMessages.scrollTop($(receiverMessages)[0].scrollHeight);
+                                    }  
                                 },
                                 error: function(e) {
                                     console.log(e);
@@ -97,8 +121,11 @@
                             });
                            
                         }
+
+                        connection.invoke('MarkMessagesAsRead', message.user);
   
-                    } else {
+                    } else if ("@User.Identity.Name" === message.user) {
+                        console.log(message);
                         var senderMessages = $(`.panel-title:contains(${message.receiver})`).parent().parent().parent().parent().find('.messagesList');
                         chatInfo = `
                                 <div class="row msg_container base_sent">
@@ -121,6 +148,18 @@
                 });
 
             connection.start()
+                .then(() => {
+                    $.ajax({
+                        type: "GET",
+                        url: '/Shopping/Products/ClearChats',
+                        success: function () {
+                            connection.invoke("NotRead");
+                        },
+                        error: function (e) {
+                            console.log(e);
+                        }
+                    });
+                })
                 .catch(function (err) {
                     return console.error(err.toString());
                 });

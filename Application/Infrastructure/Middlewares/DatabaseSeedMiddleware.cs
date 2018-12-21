@@ -40,20 +40,20 @@ namespace Application.Infrastructure.Middlewares
                     Type = CategoryType.Clothes
                 },
                     new Category()
-                {
-                    Id = Guid.NewGuid(),
-                    Image = "https://tshirtbg.com/image/catalog/revslider_media_folder/3715209__3.png",
-                    Name = "Shoes",
-                    Type = CategoryType.Shoes
-                },
-                new Category()
                     {
                         Id = Guid.NewGuid(),
-                        Image =
+                        Image = "https://tshirtbg.com/image/catalog/revslider_media_folder/3715209__3.png",
+                        Name = "Shoes",
+                        Type = CategoryType.Shoes
+                    },
+                new Category()
+                {
+                    Id = Guid.NewGuid(),
+                    Image =
                             "https://ae01.alicdn.com/kf/HTB1aLMvJVXXXXaAXXXXq6xXFXXXf/2017-New-Brand-Slim-Men-Bomber-Jackets-Casual-Fashion-Plaid-PU-Leather-Jacket-Men-Jaqueta-de.jpg_640x640.jpg",
-                        Name = "Jackets",
-                        Type = CategoryType.Clothes,
-                        Products = new List<Product>
+                    Name = "Jackets",
+                    Type = CategoryType.Clothes,
+                    Products = new List<Product>
                         {
                             new Product()
                             {
@@ -100,41 +100,42 @@ namespace Application.Infrastructure.Middlewares
                                 Price = 10
                             },
                         }
-                    });
+                });
             }
 
             if (!db.Sizes.Any())
             {
-                await db.Sizes.AddRangeAsync(new ClothesSize
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "S"
-                },
-            new ClothesSize
-            {
-                Id = Guid.NewGuid(),
-                Name = "M"
-            },
-            new ClothesSize
-            {
-                Id = Guid.NewGuid(),
-                Name = "L"
-            },
-            new ClothesSize
-            {
-                Id = Guid.NewGuid(),
-                Name = "XL"
-            },
-            new ClothesSize
-            {
-                Id = Guid.NewGuid(),
-                Name = "XS"
-            },
-            new ClothesSize
-            {
-                Id = Guid.NewGuid(),
-                Name = "XXL"
-            });
+                await db.Sizes.AddRangeAsync(
+                    new ClothesSize
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "S"
+                    },
+                    new ClothesSize
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "M"
+                    },
+                    new ClothesSize
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "L"
+                    },
+                    new ClothesSize
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "XL"
+                    },
+                    new ClothesSize
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "XS"
+                    },
+                    new ClothesSize
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "XXL"
+                    });
 
                 await db.Sizes.AddRangeAsync(new ShoesSize
                 {
@@ -142,35 +143,113 @@ namespace Application.Infrastructure.Middlewares
                     Name = "40",
                     Sex = Sex.Men
                 },
+                new ShoesSize
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "41",
+                    Sex = Sex.Men
+                },
+                new ShoesSize
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "42",
+                    Sex = Sex.Men
+                },
+                new ShoesSize
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "43",
+                    Sex = Sex.Men
+                },
+                new ShoesSize
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "44",
+                    Sex = Sex.Men
+                },
+                new ShoesSize
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "45",
+                    Sex = Sex.Men
+                },
                     new ShoesSize
                     {
                         Id = Guid.NewGuid(),
-                        Name = "41",
-                        Sex = Sex.Men
+                        Name = "35",
+                        Sex = Sex.Women
                     },
                     new ShoesSize
                     {
                         Id = Guid.NewGuid(),
-                        Name = "42",
-                        Sex = Sex.Men
+                        Name = "36",
+                        Sex = Sex.Women
                     },
                     new ShoesSize
                     {
                         Id = Guid.NewGuid(),
-                        Name = "43",
-                        Sex = Sex.Men
+                        Name = "37",
+                        Sex = Sex.Women
                     },
                     new ShoesSize
                     {
                         Id = Guid.NewGuid(),
-                        Name = "44",
-                        Sex = Sex.Men
+                        Name = "38",
+                        Sex = Sex.Women
                     },
                     new ShoesSize
                     {
                         Id = Guid.NewGuid(),
-                        Name = "45",
-                        Sex = Sex.Men
+                        Name = "39",
+                        Sex = Sex.Women
+                    },
+                    new ShoesSize
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "27",
+                        Sex = Sex.Kids
+                    },
+                    new ShoesSize
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "28",
+                        Sex = Sex.Kids
+                    },
+                    new ShoesSize
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "29",
+                        Sex = Sex.Kids
+                    },
+                    new ShoesSize
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "30",
+                        Sex = Sex.Kids
+                    },
+                    new ShoesSize
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "31",
+                        Sex = Sex.Kids
+                    },
+                    new ShoesSize
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "32",
+                        Sex = Sex.Kids
+                    },
+                    new ShoesSize
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "33",
+                        Sex = Sex.Kids
+                    },
+                    new ShoesSize
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "34",
+                        Sex = Sex.Kids
                     });
             }
 

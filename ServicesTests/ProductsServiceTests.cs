@@ -42,7 +42,7 @@ namespace ServicesTests
         }
 
         [Fact]
-        public void GetLatestProductsShouldOrderAscendingByDate()
+        public void GetLatestProductsShouldOrderDescendingByDate()
         {
             var productRepo = new Mock<IRepository<Product>>();
             var products = new List<Product>
@@ -58,14 +58,14 @@ namespace ServicesTests
             var checkProducts = service.GetLatestProducts().ToList();
 
             Assert.Equal(3, checkProducts.Count);
-            Assert.Equal("Jacket", checkProducts.First().Name);
+            Assert.Equal("Suit", checkProducts.First().Name);
             Assert.Equal("T-shirt", checkProducts[1].Name);
-            Assert.Equal("Suit", checkProducts.Last().Name);
+            Assert.Equal("Jacket", checkProducts.Last().Name);
             productRepo.Verify(r => r.All(), Times.Once);
         }
 
         [Fact]
-        public void GetLatestProductsShouldOrderAscendingByDateAndTakeEight()
+        public void GetLatestProductsShouldOrderDescendingByDateAndTakeEight()
         {
             var productRepo = new Mock<IRepository<Product>>();
             var products = new List<Product>
@@ -88,7 +88,7 @@ namespace ServicesTests
             var checkProducts = service.GetLatestProducts().ToList();
 
             Assert.Equal(8, checkProducts.Count);
-            Assert.Equal("Jacket", checkProducts.First().Name);
+            Assert.Equal("Suit", checkProducts.First().Name);
             Assert.Equal("T-shirt", checkProducts[1].Name);
             Assert.Equal("T-shirt", checkProducts.Last().Name);
             productRepo.Verify(r => r.All(), Times.Once);
