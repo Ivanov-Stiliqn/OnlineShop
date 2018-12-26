@@ -4,14 +4,16 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20181224124709_AddedWasSeenPropOnOrder")]
+    partial class AddedWasSeenPropOnOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,10 +189,6 @@ namespace Data.Migrations
 
                     b.Property<bool>("IsDelivered");
 
-                    b.Property<bool>("NotifyBuyer");
-
-                    b.Property<bool>("NotifySeller");
-
                     b.Property<Guid?>("ProductId");
 
                     b.Property<string>("ProductImage");
@@ -204,6 +202,8 @@ namespace Data.Migrations
                     b.Property<string>("SellerId");
 
                     b.Property<string>("Size");
+
+                    b.Property<bool>("WasSeen");
 
                     b.HasKey("Id");
 

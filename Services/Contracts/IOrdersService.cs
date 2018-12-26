@@ -10,9 +10,9 @@ namespace Services.Contracts
     {
         Task CreateOrders(ICollection<Order> orders, string username);
 
-        ICollection<Order> GetSellOrders(string username);
+        Task<ICollection<Order>> GetSellOrders(string username);
 
-        ICollection<Order> GetPurchaseOrders(string username);
+        Task<ICollection<Order>> GetPurchaseOrders(string username);
 
         Task<bool> ReceiveOrder(string id, string username);
 
@@ -21,5 +21,9 @@ namespace Services.Contracts
         Order GetOrderDetails(string id);
 
         ICollection<Order> GetAllOrders();
+
+        bool IsThereUnSeenPurchaseOrders(string username);
+
+        bool IsThereUnSeenSellOrders(string username);
     }
 }

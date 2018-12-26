@@ -60,7 +60,7 @@ namespace Services
             await this.ordersRepository.SaveChangesAsync();
         }
 
-        public ICollection<Order> GetSellOrders(string username)
+        public async Task<ICollection<Order>> GetSellOrders(string username)
         {
             var user = this.usersRepository
                 .All()
@@ -70,7 +70,10 @@ namespace Services
                     .ThenInclude(o => o.Buyer)
                 .FirstOrDefault(u => u.UserName == username);
 
-            return user.SellOrders.OrderByDescending(o => o.DateOfCreation).ToList();
+            var orders = user.SellOrders.OrderByDescending(o => o.DateOfCreation).ToList();
+            orders.Where(o => o.NotifySeller).ToList().ForEach(o => o.NotifySeller = false);
+            await this.ordersRepository.SaveChangesAsync();
+            return orders;
         }
 
         public async Task<bool> AcceptOrder(string id, string username)
@@ -93,6 +96,7 @@ namespace Services
             }
 
             order.IsAccepted = true;
+            order.NotifyBuyer = true;
             await this.ordersRepository.SaveChangesAsync();
             return true;
         }
@@ -117,11 +121,12 @@ namespace Services
             }
 
             order.IsDelivered = true;
+            order.NotifySeller = true;
             await this.ordersRepository.SaveChangesAsync();
             return true;
         }
 
-        public ICollection<Order> GetPurchaseOrders(string username)
+        public async Task<ICollection<Order>> GetPurchaseOrders(string username)
         {
             var user = this.usersRepository
                 .All()
@@ -131,7 +136,10 @@ namespace Services
                     .ThenInclude(o => o.Seller)
                 .FirstOrDefault(u => u.UserName == username);
 
-            return user.PurchaseOrders.OrderByDescending(o => o.DateOfCreation).ToList();
+            var orders = user.PurchaseOrders.OrderByDescending(o => o.DateOfCreation).ToList();
+            orders.Where(o => o.NotifyBuyer).ToList().ForEach(o => o.NotifyBuyer = false);
+            await this.ordersRepository.SaveChangesAsync();
+            return orders;
         }
 
         public Order GetOrderDetails(string id)
@@ -158,6 +166,28 @@ namespace Services
                 .Include(o => o.Seller)
                 .OrderByDescending(o => o.DateOfCreation)
                 .ToList();
+        }
+
+        public bool IsThereUnSeenPurchaseOrders(string username)
+        {
+            var user = this.usersRepository
+                .All()
+                .Include(p => p.PurchaseOrders)
+                .FirstOrDefault(u => u.UserName == username);
+
+            var orders = user.PurchaseOrders.Where(o => o.NotifyBuyer || !o.IsDelivered && o.IsAccepted).ToList();
+            return orders.Count > 0;
+        }
+
+        public bool IsThereUnSeenSellOrders(string username)
+        {
+            var user = this.usersRepository
+                .All()
+                .Include(p => p.SellOrders)
+                .FirstOrDefault(u => u.UserName == username);
+
+            var orders = user.SellOrders.Where(o => o.NotifySeller || !o.IsAccepted).ToList();
+            return orders.Count > 0;
         }
     }
 }

@@ -39,5 +39,9 @@ namespace Models
         public string Size { get; set; }
 
         public int Quantity { get; set; }
+
+        public bool NotifySeller { get; set; } = true;
+
+        public bool NotifyBuyer { get; set; } = true;
     }
 }

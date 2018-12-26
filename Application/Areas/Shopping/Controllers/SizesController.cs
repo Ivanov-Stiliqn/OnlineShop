@@ -41,6 +41,13 @@ namespace Application.Areas.Shopping.Controllers
                 return View(model);
             }
 
+            if (model.SizeId == Guid.Empty)
+            {
+                ModelState.AddModelError("SizeId", "Please choose size");
+                model.AllSizes = service.GetSizes(type, sex).Select(s => s.Map<Size, SizeListItemViewModel>()).ToList();
+                return View(model);
+            }
+
             var productCheck = Guid.TryParse(productId, out Guid parsedProductId);
             if (!productCheck)
             {

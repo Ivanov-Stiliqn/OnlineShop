@@ -153,6 +153,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CategoriesServiceTests.cs" />
+    <Compile Include="MessagesServiceTests.cs" />
     <Compile Include="OrdersServiceTests.cs" />
     <Compile Include="ProductsServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

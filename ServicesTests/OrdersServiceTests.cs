@@ -179,17 +179,18 @@ namespace ServicesTests
         }
 
         [Fact]
-        public void GetSellOrdersShouldWork()
+        public async Task GetSellOrdersShouldWork()
         {
             var userRepo = new Mock<IRepository<User>>();
+            var ordersRepo = new Mock<IRepository<Order>>();
             userRepo.Setup(r => r.All()).Returns(new List<User>
             {
                 new User { UserName = "stamat", SellOrders = new List<Order> {new Order()}},
                 new User { UserName = "gosho", SellOrders = new List<Order> {new Order(), new Order()}}
             }.AsQueryable());
 
-            var service = new OrdersService(null, userRepo.Object, null);
-            var orders = service.GetSellOrders("stamat");
+            var service = new OrdersService(ordersRepo.Object, userRepo.Object, null);
+            var orders = await service.GetSellOrders("stamat");
 
             Assert.Equal(1, orders.Count);
 
@@ -197,9 +198,10 @@ namespace ServicesTests
         }
 
         [Fact]
-        public void GetSellOrdersShouldOrderDescendingByDate()
+        public async Task GetSellOrdersShouldOrderDescendingByDate()
         {
             var userRepo = new Mock<IRepository<User>>();
+            var ordersRepo = new Mock<IRepository<Order>>();
             userRepo.Setup(r => r.All()).Returns(new List<User>
             {
                 new User
@@ -214,28 +216,56 @@ namespace ServicesTests
                 new User { UserName = "gosho", SellOrders = new List<Order> {new Order(), new Order()}}
             }.AsQueryable());
 
-            var service = new OrdersService(null, userRepo.Object, null);
-            var orders = service.GetSellOrders("stamat").ToList();
+            var service = new OrdersService(ordersRepo.Object, userRepo.Object, null);
+            var orders = await service.GetSellOrders("stamat");
 
             Assert.Equal(3, orders.Count);
             Assert.Equal("1", orders.First().ProductName);
-            Assert.Equal("2", orders[1].ProductName);
+            Assert.Equal("2", orders.ToList()[1].ProductName);
             Assert.Equal("3", orders.Last().ProductName);
             userRepo.Verify(r => r.All(), Times.Once);
         }
 
         [Fact]
-        public void GetPurchaseOrdersShouldWork()
+        public async Task GetSellOrdersShouldSetNotifySellersToFalse()
         {
             var userRepo = new Mock<IRepository<User>>();
+            var ordersRepo = new Mock<IRepository<Order>>();
+            userRepo.Setup(r => r.All()).Returns(new List<User>
+            {
+                new User
+                {
+                    UserName = "stamat", SellOrders = new List<Order>
+                    {
+                        new Order {DateOfCreation = DateTime.Now, ProductName = "3", NotifySeller = true},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(3), ProductName = "1", NotifySeller = true},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(2), ProductName = "2", NotifySeller = true}
+                    }
+                },
+                new User { UserName = "gosho", SellOrders = new List<Order> {new Order(), new Order()}}
+            }.AsQueryable());
+
+            var service = new OrdersService(ordersRepo.Object, userRepo.Object, null);
+            var orders = await service.GetSellOrders("stamat");
+
+            Assert.DoesNotContain(orders, o => o.NotifySeller);
+            userRepo.Verify(r => r.All(), Times.Once);
+            ordersRepo.Verify(r => r.SaveChangesAsync(), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetPurchaseOrdersShouldWork()
+        {
+            var userRepo = new Mock<IRepository<User>>();
+            var ordersRepo = new Mock<IRepository<Order>>();
             userRepo.Setup(r => r.All()).Returns(new List<User>
             {
                 new User { UserName = "stamat", PurchaseOrders = new List<Order> {new Order()}},
                 new User { UserName = "gosho", PurchaseOrders = new List<Order> {new Order(), new Order()}}
             }.AsQueryable());
 
-            var service = new OrdersService(null, userRepo.Object, null);
-            var orders = service.GetPurchaseOrders("stamat");
+            var service = new OrdersService(ordersRepo.Object, userRepo.Object, null);
+            var orders = await service.GetPurchaseOrders("stamat");
 
             Assert.Equal(1, orders.Count);
 
@@ -243,9 +273,10 @@ namespace ServicesTests
         }
 
         [Fact]
-        public void GetPurchaseOrdersShouldOrderDescendingByDate()
+        public async Task GetPurchaseOrdersShouldOrderDescendingByDate()
         {
             var userRepo = new Mock<IRepository<User>>();
+            var ordersRepo = new Mock<IRepository<Order>>();
             userRepo.Setup(r => r.All()).Returns(new List<User>
             {
                 new User
@@ -260,14 +291,43 @@ namespace ServicesTests
                 new User { UserName = "gosho", SellOrders = new List<Order> {new Order(), new Order()}}
             }.AsQueryable());
 
-            var service = new OrdersService(null, userRepo.Object, null);
-            var orders = service.GetPurchaseOrders("stamat").ToList();
+            var service = new OrdersService(ordersRepo.Object, userRepo.Object, null);
+            var orders = await service.GetPurchaseOrders("stamat");
 
             Assert.Equal(3, orders.Count);
             Assert.Equal("1", orders.First().ProductName);
-            Assert.Equal("2", orders[1].ProductName);
+            Assert.Equal("2", orders.ToList()[1].ProductName);
             Assert.Equal("3", orders.Last().ProductName);
             userRepo.Verify(r => r.All(), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetPurchaseOrdersShouldOrderSetNotifyForBuyersToFalse()
+        {
+            var userRepo = new Mock<IRepository<User>>();
+            var ordersRepo = new Mock<IRepository<Order>>();
+            userRepo.Setup(r => r.All()).Returns(new List<User>
+            {
+                new User
+                {
+                    UserName = "stamat", PurchaseOrders = new List<Order>
+                    {
+                        new Order {DateOfCreation = DateTime.Now, ProductName = "3", NotifyBuyer = true},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(3), ProductName = "1", NotifyBuyer = true},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(2), ProductName = "2", NotifyBuyer = true}
+                    }
+                },
+                new User { UserName = "gosho", SellOrders = new List<Order> {new Order(), new Order()}}
+            }.AsQueryable());
+
+            var service = new OrdersService(ordersRepo.Object, userRepo.Object, null);
+            var orders = await service.GetPurchaseOrders("stamat");
+
+            Assert.Equal(3, orders.Count);
+            
+            Assert.DoesNotContain(orders, o => o.NotifyBuyer);
+            userRepo.Verify(r => r.All(), Times.Once);
+            ordersRepo.Verify(r => r.SaveChangesAsync(), Times.Once);
         }
 
         [Fact]
@@ -607,6 +667,214 @@ namespace ServicesTests
             Assert.Equal("2", checkOrders[1].ProductName);
             Assert.Equal("3", checkOrders.Last().ProductName);
             orderRepo.Verify(r => r.All(), Times.Once);
+        }
+
+        [Fact]
+        public void IsThereUnSeenPurchaseOrdersShouldReturnTrue()
+        {
+            var userRepo = new Mock<IRepository<User>>();
+            var ordersRepo = new Mock<IRepository<Order>>();
+            userRepo.Setup(r => r.All()).Returns(new List<User>
+            {
+                new User
+                {
+                    UserName = "stamat", PurchaseOrders = new List<Order>
+                    {
+                        new Order {DateOfCreation = DateTime.Now, ProductName = "3", NotifyBuyer = true},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(3), ProductName = "1", NotifyBuyer = false},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(2), ProductName = "2", NotifyBuyer = true}
+                    }
+                },
+                new User { UserName = "gosho", SellOrders = new List<Order> {new Order(), new Order()}}
+            }.AsQueryable());
+
+            var service = new OrdersService(ordersRepo.Object, userRepo.Object, null);
+            var unSeen = service.IsThereUnSeenPurchaseOrders("stamat");
+
+            Assert.True(unSeen);
+            userRepo.Verify(r => r.All(), Times.Once);
+        }
+
+        [Fact]
+        public void IsThereUnSeenPurchaseOrdersShouldReturnFalse()
+        {
+            var userRepo = new Mock<IRepository<User>>();
+            var ordersRepo = new Mock<IRepository<Order>>();
+            userRepo.Setup(r => r.All()).Returns(new List<User>
+            {
+                new User
+                {
+                    UserName = "stamat", PurchaseOrders = new List<Order>
+                    {
+                        new Order {DateOfCreation = DateTime.Now, ProductName = "3", NotifyBuyer = false},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(3), ProductName = "1", NotifyBuyer = false},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(2), ProductName = "2", NotifyBuyer = false}
+                    }
+                },
+                new User { UserName = "gosho", SellOrders = new List<Order> {new Order(), new Order()}}
+            }.AsQueryable());
+
+            var service = new OrdersService(ordersRepo.Object, userRepo.Object, null);
+            var unSeen = service.IsThereUnSeenPurchaseOrders("stamat");
+
+            Assert.False(unSeen);
+            userRepo.Verify(r => r.All(), Times.Once);
+        }
+
+        [Fact]
+        public void IsThereUnSeenPurchaseOrdersShouldReturnTrueForNotReceivedProduct()
+        {
+            var userRepo = new Mock<IRepository<User>>();
+            var ordersRepo = new Mock<IRepository<Order>>();
+            userRepo.Setup(r => r.All()).Returns(new List<User>
+            {
+                new User
+                {
+                    UserName = "stamat", PurchaseOrders = new List<Order>
+                    {
+                        new Order {DateOfCreation = DateTime.Now, ProductName = "3", NotifyBuyer = false, IsAccepted = true, IsDelivered = false},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(3), ProductName = "1", NotifyBuyer = false},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(2), ProductName = "2", NotifyBuyer = false}
+                    }
+                },
+                new User { UserName = "gosho", SellOrders = new List<Order> {new Order(), new Order()}}
+            }.AsQueryable());
+
+            var service = new OrdersService(ordersRepo.Object, userRepo.Object, null);
+            var unSeen = service.IsThereUnSeenPurchaseOrders("stamat");
+
+            Assert.True(unSeen);
+            userRepo.Verify(r => r.All(), Times.Once);
+        }
+
+        [Fact]
+        public void IsThereUnSeenPurchaseOrdersShouldReturnFalseForNotAcceptedProduct()
+        {
+            var userRepo = new Mock<IRepository<User>>();
+            var ordersRepo = new Mock<IRepository<Order>>();
+            userRepo.Setup(r => r.All()).Returns(new List<User>
+            {
+                new User
+                {
+                    UserName = "stamat", PurchaseOrders = new List<Order>
+                    {
+                        new Order {DateOfCreation = DateTime.Now, ProductName = "3", NotifyBuyer = false, IsAccepted = false, IsDelivered = false},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(3), ProductName = "1", NotifyBuyer = false},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(2), ProductName = "2", NotifyBuyer = false}
+                    }
+                },
+                new User { UserName = "gosho", SellOrders = new List<Order> {new Order(), new Order()}}
+            }.AsQueryable());
+
+            var service = new OrdersService(ordersRepo.Object, userRepo.Object, null);
+            var unSeen = service.IsThereUnSeenPurchaseOrders("stamat");
+
+            Assert.False(unSeen);
+            userRepo.Verify(r => r.All(), Times.Once);
+        }
+
+        [Fact]
+        public void IsThereUnSeenSellOrdersShouldReturnTrue()
+        {
+            var userRepo = new Mock<IRepository<User>>();
+            var ordersRepo = new Mock<IRepository<Order>>();
+            userRepo.Setup(r => r.All()).Returns(new List<User>
+            {
+                new User
+                {
+                    UserName = "stamat", SellOrders = new List<Order>
+                    {
+                        new Order {DateOfCreation = DateTime.Now, ProductName = "3", NotifySeller = true},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(3), ProductName = "1", NotifySeller = false},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(2), ProductName = "2", NotifySeller = true}
+                    }
+                },
+                new User { UserName = "gosho", SellOrders = new List<Order> {new Order(), new Order()}}
+            }.AsQueryable());
+
+            var service = new OrdersService(ordersRepo.Object, userRepo.Object, null);
+            var unSeen = service.IsThereUnSeenSellOrders("stamat");
+
+            Assert.True(unSeen);
+            userRepo.Verify(r => r.All(), Times.Once);
+        }
+
+        [Fact]
+        public void IsThereUnSeenSellOrdersShouldReturnFalse()
+        {
+            var userRepo = new Mock<IRepository<User>>();
+            var ordersRepo = new Mock<IRepository<Order>>();
+            userRepo.Setup(r => r.All()).Returns(new List<User>
+            {
+                new User
+                {
+                    UserName = "stamat", SellOrders = new List<Order>
+                    {
+                        new Order {DateOfCreation = DateTime.Now, ProductName = "3", NotifySeller = false, IsAccepted = true},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(3), ProductName = "1", NotifySeller = false, IsAccepted = true},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(2), ProductName = "2", NotifySeller = false, IsAccepted = true}
+                    }
+                },
+                new User { UserName = "gosho", SellOrders = new List<Order> {new Order(), new Order()}}
+            }.AsQueryable());
+
+            var service = new OrdersService(ordersRepo.Object, userRepo.Object, null);
+            var unSeen = service.IsThereUnSeenSellOrders("stamat");
+
+            Assert.False(unSeen);
+            userRepo.Verify(r => r.All(), Times.Once);
+        }
+
+        [Fact]
+        public void IsThereUnSeenSellOrdersShouldReturnTrueForNotAcceptedOrder()
+        {
+            var userRepo = new Mock<IRepository<User>>();
+            var ordersRepo = new Mock<IRepository<Order>>();
+            userRepo.Setup(r => r.All()).Returns(new List<User>
+            {
+                new User
+                {
+                    UserName = "stamat", SellOrders = new List<Order>
+                    {
+                        new Order {DateOfCreation = DateTime.Now, ProductName = "3", NotifySeller = false, IsAccepted = false},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(3), ProductName = "1", NotifySeller = false, IsAccepted = true},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(2), ProductName = "2", NotifySeller = false, IsAccepted = true}
+                    }
+                },
+                new User { UserName = "gosho", SellOrders = new List<Order> {new Order(), new Order()}}
+            }.AsQueryable());
+
+            var service = new OrdersService(ordersRepo.Object, userRepo.Object, null);
+            var unSeen = service.IsThereUnSeenSellOrders("stamat");
+
+            Assert.True(unSeen);
+            userRepo.Verify(r => r.All(), Times.Once);
+        }
+
+        [Fact]
+        public void IsThereUnSeenSellOrdersShouldReturnTrueForCompletedOrder()
+        {
+            var userRepo = new Mock<IRepository<User>>();
+            var ordersRepo = new Mock<IRepository<Order>>();
+            userRepo.Setup(r => r.All()).Returns(new List<User>
+            {
+                new User
+                {
+                    UserName = "stamat", SellOrders = new List<Order>
+                    {
+                        new Order {DateOfCreation = DateTime.Now, ProductName = "3", NotifySeller = true, IsAccepted = true},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(3), ProductName = "1", NotifySeller = false, IsAccepted = true},
+                        new Order {DateOfCreation = DateTime.Now.AddDays(2), ProductName = "2", NotifySeller = false, IsAccepted = true}
+                    }
+                },
+                new User { UserName = "gosho", SellOrders = new List<Order> {new Order(), new Order()}}
+            }.AsQueryable());
+
+            var service = new OrdersService(ordersRepo.Object, userRepo.Object, null);
+            var unSeen = service.IsThereUnSeenSellOrders("stamat");
+
+            Assert.True(unSeen);
+            userRepo.Verify(r => r.All(), Times.Once);
         }
     }
 }

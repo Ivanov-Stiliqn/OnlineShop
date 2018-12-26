@@ -16,18 +16,27 @@ namespace Application.Views.Shared.Components.Navigation
     public class NavigationViewComponent: ViewComponent
     {
         private readonly ICategoriesService service;
+        private readonly IOrdersService ordersService;
        
-        public NavigationViewComponent(ICategoriesService service)
+        public NavigationViewComponent(ICategoriesService service, IOrdersService ordersService)
         {
             this.service = service;
+            this.ordersService = ordersService;
         }
 
         public IViewComponentResult Invoke()
         {
-            var model = this.service
-                .GetCategories()
-                .Select(c => c.Map<Category, MenuItemViewModel>())
-                .ToList();
+            var model = new NavigationViewModel
+            {
+                Categories = this.service
+                    .GetCategories()
+                    .Select(c => c.Map<Category, MenuItemViewModel>())
+                    .ToList(),
+                UnSeenPurchaseOrders = this.User.Identity.IsAuthenticated &&
+                    this.ordersService.IsThereUnSeenPurchaseOrders(this.User.Identity.Name),
+                UnSeenSellOrders = this.User.Identity.IsAuthenticated &&
+                    this.ordersService.IsThereUnSeenSellOrders(this.User.Identity.Name)
+            };
 
             return View(model);
         }

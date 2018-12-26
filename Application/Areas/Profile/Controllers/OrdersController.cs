@@ -20,17 +20,17 @@ namespace Application.Areas.Profile.Controllers
             this.ordersService = ordersService;
         }
 
-        public IActionResult SellOrders()
+        public async Task<IActionResult> SellOrders()
         {
-            var orders = this.ordersService.GetSellOrders(this.User.Identity.Name);
+            var orders = await this.ordersService.GetSellOrders(this.User.Identity.Name);
             var model = orders.Select(o => o.Map<Order, OrderViewModel>()).ToList();
 
             return View("Index", model);
         }
 
-        public IActionResult PurchaseOrders()
+        public async Task<IActionResult> PurchaseOrders()
         {
-            var orders = this.ordersService.GetPurchaseOrders(this.User.Identity.Name);
+            var orders = await this.ordersService.GetPurchaseOrders(this.User.Identity.Name);
             var model = orders.Select(o => o.Map<Order, OrderViewModel>()).ToList();
 
             return View("Index", model);
