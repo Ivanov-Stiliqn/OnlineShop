@@ -142,7 +142,11 @@
 @section Scripts
 {
     <script>
-        $(document).ready(function() {
+        $("#slider-range").slider('values', [0, 500]);
+
+        $(document).ready(function () {
+            $("#amount").val("$0 $500");
+
             $('.sex').on("change",
                 function(e) {
                     let value = $(this).val();

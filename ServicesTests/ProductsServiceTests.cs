@@ -100,9 +100,9 @@ namespace ServicesTests
             var productRepo = new Mock<IRepository<Product>>();
             var products = new List<Product>
             {
-                new Product {Views = 1, Name = "Jacket"},
-                new Product {Views = 3, Name = "Suit"},
-                new Product{Views = 2, Name = "T-shirt"},
+                new Product {Views = "stamat", Name = "Jacket"},
+                new Product {Views = "stamat, gosho, pesho", Name = "Suit"},
+                new Product{Views = "stamat, gosho", Name = "T-shirt"},
             };
 
             productRepo.Setup(r => r.All()).Returns(products.AsQueryable());
@@ -123,19 +123,19 @@ namespace ServicesTests
             var productRepo = new Mock<IRepository<Product>>();
             var products = new List<Product>
             {
-                new Product {Views = 1, Name = "Jacket"},
-                new Product {Views = 3, Name = "Suit"},
-                new Product{Views = 2, Name = "T-shirt"},
-                new Product{Views = 2, Name = "T-shirt"},
-                new Product{Views = 2, Name = "T-shirt"},
-                new Product{Views = 2, Name = "T-shirt"},
-                new Product{Views = 2, Name = "T-shirt"},
-                new Product{Views = 2, Name = "T-shirt"},
-                new Product{Views = 2, Name = "T-shirt"},
-                new Product{Views = 2, Name = "T-shirt"},
-                new Product{Views = 2, Name = "T-shirt"},
-                new Product{Views = 2, Name = "T-shirt"},
-                new Product{Views = 2, Name = "T-shirt"}
+                new Product {Views = "stamat", Name = "Jacket"},
+                new Product {Views = "stamat, gosho, pesho", Name = "Suit"},
+                new Product{Views = "stamat, gosho", Name = "T-shirt"},
+                new Product{Views = "stamat, gosho", Name = "T-shirt"},
+                new Product{Views = "stamat, gosho", Name = "T-shirt"},
+                new Product{Views = "stamat, gosho", Name = "T-shirt"},
+                new Product{Views = "stamat, gosho", Name = "T-shirt"},
+                new Product{Views = "stamat, gosho", Name = "T-shirt"},
+                new Product{Views = "stamat, gosho", Name = "T-shirt"},
+                new Product{Views = "stamat, gosho", Name = "T-shirt"},
+                new Product{Views = "stamat, gosho", Name = "T-shirt"},
+                new Product{Views = "stamat, gosho", Name = "T-shirt"},
+                new Product{Views = "stamat, gosho", Name = "T-shirt"}
             };
 
             productRepo.Setup(r => r.All()).Returns(products.AsQueryable());
@@ -254,21 +254,69 @@ namespace ServicesTests
             var productId = Guid.NewGuid();
             var products = new List<Product>
             {
-                new Product {Id = Guid.NewGuid(), Views = 1, Name = "Jacket"},
-                new Product {Id = productId, Views = 1, Name = "Suit"},
-                new Product{Id = Guid.NewGuid(), Views = 1, Name = "T-shirt"},
+                new Product {Id = Guid.NewGuid(), Views = "stamat", Name = "Jacket", Creator = new User{UserName = "pesho"}},
+                new Product {Id = productId, Views = "stamat", Name = "Suit", Creator = new User{UserName = "pesho"}},
+                new Product{Id = Guid.NewGuid(), Views = "stamat", Name = "T-shirt", Creator = new User{UserName = "pesho"}},
             };
 
             productRepo.Setup(r => r.All()).Returns(products.AsQueryable());
 
             var service = new ProductsService(productRepo.Object, null, null);
-            var product = await service.GetProduct(productId.ToString(), true);
+            var product = await service.GetProduct(productId.ToString(), "gosho");
 
             Assert.NotNull(product);
-            Assert.Equal(2, product.Views);
+            Assert.Equal(2, product.ViewsCount);
             Assert.Equal("Suit", product.Name);
             productRepo.Verify(r => r.All(), Times.Once);
             productRepo.Verify(r => r.SaveChangesAsync(), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetProductShouldNotIncreaseViewsForSameUser()
+        {
+            var productRepo = new Mock<IRepository<Product>>();
+            var productId = Guid.NewGuid();
+            var products = new List<Product>
+            {
+                new Product {Id = Guid.NewGuid(), Views = "stamat", Name = "Jacket"},
+                new Product {Id = productId, Views = "stamat", Name = "Suit"},
+                new Product{Id = Guid.NewGuid(), Views = "stamat", Name = "T-shirt"},
+            };
+
+            productRepo.Setup(r => r.All()).Returns(products.AsQueryable());
+
+            var service = new ProductsService(productRepo.Object, null, null);
+            var product = await service.GetProduct(productId.ToString(), "stamat");
+
+            Assert.NotNull(product);
+            Assert.Equal(1, product.ViewsCount);
+            Assert.Equal("Suit", product.Name);
+            productRepo.Verify(r => r.All(), Times.Once);
+            productRepo.Verify(r => r.SaveChangesAsync(), Times.Never);
+        }
+
+        [Fact]
+        public async Task GetProductShouldNotIncreaseViewsForCreator()
+        {
+            var productRepo = new Mock<IRepository<Product>>();
+            var productId = Guid.NewGuid();
+            var products = new List<Product>
+            {
+                new Product {Id = Guid.NewGuid(), Views = "stamat", Name = "Jacket", Creator = new User{UserName = "pesho"}},
+                new Product {Id = productId, Views = "stamat", Name = "Suit", Creator = new User{UserName = "pesho"}},
+                new Product{Id = Guid.NewGuid(), Views = "stamat", Name = "T-shirt", Creator = new User{UserName = "pesho"}},
+            };
+
+            productRepo.Setup(r => r.All()).Returns(products.AsQueryable());
+
+            var service = new ProductsService(productRepo.Object, null, null);
+            var product = await service.GetProduct(productId.ToString(), "pesho");
+
+            Assert.NotNull(product);
+            Assert.Equal(1, product.ViewsCount);
+            Assert.Equal("Suit", product.Name);
+            productRepo.Verify(r => r.All(), Times.Once);
+            productRepo.Verify(r => r.SaveChangesAsync(), Times.Never);
         }
 
         [Fact]
@@ -278,15 +326,15 @@ namespace ServicesTests
             var productId = Guid.NewGuid();
             var products = new List<Product>
             {
-                new Product {Id = Guid.NewGuid(), Views = 1, Name = "Jacket"},
-                new Product {Id = productId, Views = 1, Name = "Suit"},
-                new Product{Id = Guid.NewGuid(), Views = 1, Name = "T-shirt"},
+                new Product {Id = Guid.NewGuid(), Views = "stamat", Name = "Jacket"},
+                new Product {Id = productId, Views = "stamat", Name = "Suit"},
+                new Product{Id = Guid.NewGuid(), Views = "stamat", Name = "T-shirt"},
             };
 
             productRepo.Setup(r => r.All()).Returns(products.AsQueryable());
 
             var service = new ProductsService(productRepo.Object, null, null);
-            var product = await service.GetProduct("123", true);
+            var product = await service.GetProduct("123", "gosho");
 
             Assert.Null(product);
             productRepo.Verify(r => r.All(), Times.Never);
@@ -300,41 +348,17 @@ namespace ServicesTests
             var productId = Guid.NewGuid();
             var products = new List<Product>
             {
-                new Product {Id = Guid.NewGuid(), Views = 1, Name = "Jacket"},
-                new Product {Id = productId, Views = 1, Name = "Suit"},
-                new Product{Id = Guid.NewGuid(), Views = 1, Name = "T-shirt"},
+                new Product {Id = Guid.NewGuid(), Views = "stamat", Name = "Jacket"},
+                new Product {Id = productId, Views = "stamat", Name = "Suit"},
+                new Product{Id = Guid.NewGuid(), Views = "stamat", Name = "T-shirt"},
             };
 
             productRepo.Setup(r => r.All()).Returns(products.AsQueryable());
 
             var service = new ProductsService(productRepo.Object, null, null);
-            var product = await service.GetProduct(Guid.NewGuid().ToString(), true);
+            var product = await service.GetProduct(Guid.NewGuid().ToString(), "gosho");
 
             Assert.Null(product);
-            productRepo.Verify(r => r.All(), Times.Once);
-            productRepo.Verify(r => r.SaveChangesAsync(), Times.Never);
-        }
-
-        [Fact]
-        public async Task GetProductShouldReturnProductButNotIncreaseViews()
-        {
-            var productRepo = new Mock<IRepository<Product>>();
-            var productId = Guid.NewGuid();
-            var products = new List<Product>
-            {
-                new Product {Id = Guid.NewGuid(), Views = 1, Name = "Jacket"},
-                new Product {Id = productId, Views = 1, Name = "Suit"},
-                new Product{Id = Guid.NewGuid(), Views = 1, Name = "T-shirt"},
-            };
-
-            productRepo.Setup(r => r.All()).Returns(products.AsQueryable());
-
-            var service = new ProductsService(productRepo.Object, null, null);
-            var product = await service.GetProduct(productId.ToString(), false);
-
-            Assert.NotNull(product);
-            Assert.Equal(1, product.Views);
-            Assert.Equal("Suit", product.Name);
             productRepo.Verify(r => r.All(), Times.Once);
             productRepo.Verify(r => r.SaveChangesAsync(), Times.Never);
         }

@@ -31,6 +31,7 @@ namespace Services.Contracts
             decimal minPrice, 
             decimal maxPrice, 
             Guid sizeId, 
-            Sex sex);
+            Sex sex,
+            string username);
     }
 }

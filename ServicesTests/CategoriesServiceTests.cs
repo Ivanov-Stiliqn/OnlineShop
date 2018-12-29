@@ -90,8 +90,8 @@ namespace ServicesTests
             var categoriesRepo = new Mock<IRepository<Category>>();
             var categories = new List<Category>()
             {
-                new Category {Name = "Jackets", Views = 1},
-                new Category {Name = "Suits", Views = 3}
+                new Category {Name = "Jackets", Views = "stamat"},
+                new Category {Name = "Suits", Views = "stamat, gosho, pesho"}
             };
 
             categoriesRepo.Setup(r => r.All()).Returns(categories.AsQueryable());
@@ -112,10 +112,10 @@ namespace ServicesTests
             var categoriesRepo = new Mock<IRepository<Category>>();
             var categories = new List<Category>()
             {
-                new Category {Name = "Jackets", Views = 1},
-                new Category {Name = "Suits", Views = 3},
-                new Category {Name = "Something", Views = 2},
-                new Category {Name = "T-shirts", Views = 2}
+                new Category {Name = "Jackets", Views = "stamat"},
+                new Category {Name = "Suits", Views = "stamat, gosho, pesho"},
+                new Category {Name = "Something", Views = "stamat, gosho"},
+                new Category {Name = "T-shirts", Views = "stamat, gosho"}
             };
 
             categoriesRepo.Setup(r => r.All()).Returns(categories.AsQueryable());
@@ -148,7 +148,7 @@ namespace ServicesTests
                 {
                     Id = categoryId,
                     Name = "Jackets",
-                    Views = 1,
+                    Views = "stamat",
                     Products = new List<Product>
                     {
                         new Product(),
@@ -158,21 +158,67 @@ namespace ServicesTests
                         new Product(),
                     }
                 },
-                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "Something", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = 1}
+                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "Something", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = "stamat"}
             };
 
             categoriesRepo.Setup(r => r.All()).Returns(categories.AsQueryable());
 
             var service = new CategoriesService(categoriesRepo.Object);
 
-            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, 0);
+            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, 0, "gosho");
             var productsTotalCount = service.SearchedProductsCount;
 
             Assert.Equal(5, productsTotalCount);
             Assert.Equal(3, products.Count);
-            Assert.Contains(categories, c => c.Views > 1);
+            Assert.Contains(categories, c => c.ViewsCount > 1);
+            categoriesRepo.Verify(r => r.All(), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetProductsByCategoryShouldWorkAndAndNotIncreaseViewsForSameUser()
+        {
+            Guid categoryId = Guid.NewGuid();
+            int skip = 0;
+            int take = 3;
+            decimal minPrice = 0.0m;
+            decimal maxPrice = 0.0m;
+            Guid sizeId = Guid.Empty;
+
+
+            var categoriesRepo = new Mock<IRepository<Category>>();
+            var categories = new List<Category>()
+            {
+                new Category
+                {
+                    Id = categoryId,
+                    Name = "Jackets",
+                    Views = "stamat",
+                    Products = new List<Product>
+                    {
+                        new Product(),
+                        new Product(),
+                        new Product(),
+                        new Product(),
+                        new Product(),
+                    }
+                },
+                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "Something", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = "stamat"}
+            };
+
+            categoriesRepo.Setup(r => r.All()).Returns(categories.AsQueryable());
+
+            var service = new CategoriesService(categoriesRepo.Object);
+
+            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, 0, "stamat");
+            var productsTotalCount = service.SearchedProductsCount;
+
+            Assert.Equal(5, productsTotalCount);
+            Assert.Equal(3, products.Count);
+            Assert.DoesNotContain(categories, c => c.ViewsCount > 1);
             categoriesRepo.Verify(r => r.All(), Times.Once);
         }
 
@@ -194,7 +240,7 @@ namespace ServicesTests
                 {
                     Id = categoryId,
                     Name = "Jackets",
-                    Views = 1,
+                    Views = "stamat",
                     Products = new List<Product>
                     {
                         new Product {DateOfCreation = DateTime.Now.AddDays(3), Name = "test 1"},
@@ -204,16 +250,16 @@ namespace ServicesTests
                         new Product {DateOfCreation = DateTime.Now.AddDays(1), Name = "test 5"},
                     }
                 },
-                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "Something", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = 1}
+                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "Something", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = "stamat"}
             };
 
             categoriesRepo.Setup(r => r.All()).Returns(categories.AsQueryable());
 
             var service = new CategoriesService(categoriesRepo.Object);
 
-            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, 0);
+            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, 0, "gosho");
             var productsTotalCount = service.SearchedProductsCount;
 
             Assert.Equal(5, productsTotalCount);
@@ -221,7 +267,7 @@ namespace ServicesTests
             Assert.Equal("test 3", products.First().Name);
             Assert.Equal("test 1", products.ToList()[1].Name);
             Assert.Equal("test 1", products.Last().Name);
-            Assert.Contains(categories, c => c.Views > 1);
+            Assert.Contains(categories, c => c.ViewsCount > 1);
             categoriesRepo.Verify(r => r.All(), Times.Once);
         }
 
@@ -243,7 +289,7 @@ namespace ServicesTests
                 {
                     Id = categoryId,
                     Name = "Jackets",
-                    Views = 1,
+                    Views = "stamat",
                     Products = new List<Product>
                     {
                         new Product {DateOfCreation = DateTime.Now.AddDays(3), Name = "test 1", Price = 10},
@@ -253,16 +299,16 @@ namespace ServicesTests
                         new Product {DateOfCreation = DateTime.Now.AddDays(1), Name = "test 5", Price = 16},
                     }
                 },
-                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "Something", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = 1}
+                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "Something", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = "stamat"}
             };
 
             categoriesRepo.Setup(r => r.All()).Returns(categories.AsQueryable());
 
             var service = new CategoriesService(categoriesRepo.Object);
 
-            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, 0);
+            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, 0, "gosho");
             var productsTotalCount = service.SearchedProductsCount;
 
             Assert.Equal(3, productsTotalCount);
@@ -270,7 +316,7 @@ namespace ServicesTests
             Assert.Equal("test 3", products.First().Name);
             Assert.Equal("test 4", products.ToList()[1].Name);
             Assert.Equal("test 5", products.Last().Name);
-            Assert.Contains(categories, c => c.Views > 1);
+            Assert.Contains(categories, c => c.ViewsCount > 1);
             categoriesRepo.Verify(r => r.All(), Times.Once);
         }
 
@@ -291,7 +337,7 @@ namespace ServicesTests
                 {
                     Id = categoryId,
                     Name = "Jackets",
-                    Views = 1,
+                    Views = "stamat",
                     Products = new List<Product>
                     {
                         new Product
@@ -321,16 +367,16 @@ namespace ServicesTests
                         },
                     }
                 },
-                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "Something", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = 1}
+                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "Something", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = "stamat"}
             };
 
             categoriesRepo.Setup(r => r.All()).Returns(categories.AsQueryable());
 
             var service = new CategoriesService(categoriesRepo.Object);
 
-            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, 0);
+            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, 0, "gosho");
             var productsTotalCount = service.SearchedProductsCount;
 
             Assert.Equal(3, productsTotalCount);
@@ -338,7 +384,7 @@ namespace ServicesTests
             Assert.Equal("test 3", products.First().Name);
             Assert.Equal("test 1", products.ToList()[1].Name);
             Assert.Equal("test 1", products.Last().Name);
-            Assert.Contains(categories, c => c.Views > 1);
+            Assert.Contains(categories, c => c.ViewsCount > 1);
             categoriesRepo.Verify(r => r.All(), Times.Once);
         }
 
@@ -359,7 +405,7 @@ namespace ServicesTests
                 {
                     Id = categoryId,
                     Name = "Jackets",
-                    Views = 1,
+                    Views = "stamat",
                     Products = new List<Product>
                     {
                         new Product
@@ -389,23 +435,23 @@ namespace ServicesTests
                         },
                     }
                 },
-                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "Something", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = 1}
+                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "Something", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = "stamat"}
             };
 
             categoriesRepo.Setup(r => r.All()).Returns(categories.AsQueryable());
 
             var service = new CategoriesService(categoriesRepo.Object);
 
-            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, 0);
+            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, 0, "gosho");
             var productsTotalCount = service.SearchedProductsCount;
 
             Assert.Equal(2, productsTotalCount);
             Assert.Equal(2, products.Count);
             Assert.Equal("test 1", products.First().Name);
             Assert.Equal("test 1", products.Last().Name);
-            Assert.Contains(categories, c => c.Views > 1);
+            Assert.Contains(categories, c => c.ViewsCount > 1);
             categoriesRepo.Verify(r => r.All(), Times.Once);
         }
 
@@ -427,7 +473,7 @@ namespace ServicesTests
                 {
                     Id = categoryId,
                     Name = "Jackets",
-                    Views = 1,
+                    Views = "stamat",
                     Products = new List<Product>
                     {
                         new Product
@@ -458,16 +504,16 @@ namespace ServicesTests
                         },
                     }
                 },
-                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "Something", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = 1}
+                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "Something", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = "stamat"}
             };
 
             categoriesRepo.Setup(r => r.All()).Returns(categories.AsQueryable());
 
             var service = new CategoriesService(categoriesRepo.Object);
 
-            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, sex);
+            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, sex, "gosho");
             var productsTotalCount = service.SearchedProductsCount;
 
             Assert.Equal(4, productsTotalCount);
@@ -475,7 +521,7 @@ namespace ServicesTests
             Assert.Equal("test 3", products.First().Name);
             Assert.Equal("test 1", products.ToList()[1].Name);
             Assert.Equal("test 4", products.Last().Name);
-            Assert.Contains(categories, c => c.Views > 1);
+            Assert.Contains(categories, c => c.ViewsCount > 1);
             categoriesRepo.Verify(r => r.All(), Times.Once);
         }
 
@@ -497,7 +543,7 @@ namespace ServicesTests
                 {
                     Id = categoryId,
                     Name = "Jackets",
-                    Views = 1,
+                    Views = "stamat",
                     Products = new List<Product>
                     {
                         new Product
@@ -533,23 +579,23 @@ namespace ServicesTests
                         },
                     }
                 },
-                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "Something", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = 1}
+                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "Something", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = "stamat"}
             };
 
             categoriesRepo.Setup(r => r.All()).Returns(categories.AsQueryable());
 
             var service = new CategoriesService(categoriesRepo.Object);
 
-            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, sex);
+            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, sex, "gosho");
             var productsTotalCount = service.SearchedProductsCount;
 
             Assert.Equal(2, productsTotalCount);
             Assert.Equal(2, products.Count);
             Assert.Equal("test 3", products.First().Name);
             Assert.Equal("test 1", products.Last().Name);
-            Assert.Contains(categories, c => c.Views > 1);
+            Assert.Contains(categories, c => c.ViewsCount > 1);
             categoriesRepo.Verify(r => r.All(), Times.Once);
         }
 
@@ -571,7 +617,7 @@ namespace ServicesTests
                 {
                     Id = categoryId,
                     Name = "Jackets",
-                    Views = 1,
+                    Views = "stamat",
                     Products = new List<Product>
                     {
                         new Product
@@ -607,23 +653,23 @@ namespace ServicesTests
                         },
                     }
                 },
-                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "Something", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = 1}
+                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "Something", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = "stamat"}
             };
 
             categoriesRepo.Setup(r => r.All()).Returns(categories.AsQueryable());
 
             var service = new CategoriesService(categoriesRepo.Object);
 
-            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, sex);
+            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, sex, "gosho");
             var productsTotalCount = service.SearchedProductsCount;
 
             Assert.Equal(2, productsTotalCount);
             Assert.Equal(2, products.Count);
             Assert.Equal("test 3", products.First().Name);
             Assert.Equal("test 1", products.Last().Name);
-            Assert.Contains(categories, c => c.Views > 1);
+            Assert.Contains(categories, c => c.ViewsCount > 1);
             categoriesRepo.Verify(r => r.All(), Times.Once);
         }
 
@@ -645,7 +691,7 @@ namespace ServicesTests
                 {
                     Id = categoryId,
                     Name = "Jackets",
-                    Views = 1,
+                    Views = "stamat",
                     Products = new List<Product>
                     {
                         new Product
@@ -686,23 +732,23 @@ namespace ServicesTests
                         },
                     }
                 },
-                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "Something", Views = 1},
-                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = 1}
+                new Category {Id = Guid.NewGuid(), Name = "Suits", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "Something", Views = "stamat"},
+                new Category {Id = Guid.NewGuid(), Name = "T-shirts", Views = "stamat"}
             };
 
             categoriesRepo.Setup(r => r.All()).Returns(categories.AsQueryable());
 
             var service = new CategoriesService(categoriesRepo.Object);
 
-            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, sex);
+            var products = await service.GetProductsByCategory(categoryId, skip, take, minPrice, maxPrice, sizeId, sex, "gosho");
             var productsTotalCount = service.SearchedProductsCount;
 
             Assert.Equal(1, productsTotalCount);
             Assert.Equal(1, products.Count);
             Assert.Equal("test 1", products.First().Name);
        
-            Assert.Contains(categories, c => c.Views > 1);
+            Assert.Contains(categories, c => c.ViewsCount > 1);
             categoriesRepo.Verify(r => r.All(), Times.Once);
         }
 

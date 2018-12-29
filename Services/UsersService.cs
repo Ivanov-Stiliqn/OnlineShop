@@ -71,6 +71,12 @@ namespace Services
             return true;
         }
 
+        public bool IsUserRestricted(string username)
+        {
+            var user = this.usersRepository.All().FirstOrDefault(u => u.UserName == username);
+            return user?.IsRestricted ?? false;
+        }
+
         public UserInfo GetUserInfo(string username)
         {
             return this.usersRepository.All().Include(u => u.UserInfo).Where(u => u.UserName == username)

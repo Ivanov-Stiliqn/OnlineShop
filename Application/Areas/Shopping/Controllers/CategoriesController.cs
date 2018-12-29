@@ -72,13 +72,13 @@ namespace Application.Areas.Shopping.Controllers
                 }
             }
 
-            var size = 3;
+            var size = 9;
 
             var skip = (page - 1) * size;
             var take = size;
 
             var categoryProducts = await this.categoriesService.GetProductsByCategory(parsedCategoryId, skip, take,
-                minPrice, maxPrice, parseSizeId, sex);
+                minPrice, maxPrice, parseSizeId, sex, this.User.Identity.Name);
 
             var products = categoryProducts
                 .Select(p => p.Map<Product, ProductViewModel>())

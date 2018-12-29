@@ -92,6 +92,13 @@ namespace Application.Areas.Shopping.Controllers
                 return View(model);
             }
 
+            if (this.usersService.IsUserRestricted(this.User.Identity.Name))
+            {
+                this.TempData["Error"] =
+                    "You are restricted to create products, please contact admin for further information.";
+                return RedirectToAction(nameof(Index));
+            }
+
             var urls = new List<string>();
 
             foreach (var formFile in model.ImagesFiles)
@@ -130,7 +137,7 @@ namespace Application.Areas.Shopping.Controllers
                 this.memoryCache.Set<ICollection<ProductViewModel>>("MostOrderedProducts", mostOrderedProductsCache, memoryCacheOptions);
             }
 
-            var product = await this.productsService.GetProduct(id, true);
+            var product = await this.productsService.GetProduct(id, this.User.Identity.Name);
             if (product == null)
             {
                 this.TempData["Error"] = "Product does not exists.";
@@ -171,7 +178,7 @@ namespace Application.Areas.Shopping.Controllers
                     this.memoryCache.Set<ICollection<ProductViewModel>>("MostOrderedProducts", mostOrderedProductsCache, memoryCacheOptions);
                 }
 
-                var product = await this.productsService.GetProduct(id, false);
+                var product = await this.productsService.GetProduct(id, this.User.Identity.Name);
                 if (product == null)
                 {
                     this.TempData["Error"] = "Product does not exists.";
@@ -231,7 +238,7 @@ namespace Application.Areas.Shopping.Controllers
             if (!check)
             {
                 this.TempData["Error"] = "Product does not exits.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), "Products");
             }
 
             var idCheck = this.TempData["EditedProductId"].ToString();

@@ -44,17 +44,30 @@ namespace Services
 
         public ICollection<Category> GetTopCategories()
         {
-            return this.categoryRepository.All().OrderByDescending(c => c.Views).Take(2).ToList();
+            return this.categoryRepository.All().OrderByDescending(c => c.ViewsCount).Take(2).ToList();
         }
 
-        public async Task<ICollection<Product>> GetProductsByCategory(Guid categoryId, int skip, int take, decimal minPrice, decimal maxPrice, Guid sizeId, Sex sex)
+        public async Task<ICollection<Product>> GetProductsByCategory(
+            Guid categoryId, 
+            int skip, 
+            int take, 
+            decimal minPrice, 
+            decimal maxPrice,
+            Guid sizeId, 
+            Sex sex,
+            string username)
         {
             var category = this.categoryRepository.All()
                 .Include(c => c.Products)
                 .ThenInclude(c => c.Sizes)
                 .FirstOrDefault(c => c.Id == categoryId);
 
-            category.Views += 1;
+            var views = category.Views?.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
+            if (!views.Contains(username))
+            {
+                views.Add(username);
+                category.Views = string.Join(", ", views);
+            }
 
             var products = category.Products;
             if (minPrice != 0.0m && maxPrice != 0.0m)

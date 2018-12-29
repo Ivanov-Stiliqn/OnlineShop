@@ -250,6 +250,138 @@ namespace ServicesTests
         }
 
         [Fact]
+        public void IsUserRestrictedShouldReturnTrueForRestrictedUser()
+        {
+            var userRepo = new Mock<IRepository<User>>();
+            userRepo.Setup(r => r.All()).Returns(new List<User>
+            {
+                new User
+                {
+                    Id = "1",
+                    UserName = "stamat",
+                    PurchaseOrders = new List<Order>(),
+                    Reports = new List<Report>(),
+                    MyProducts = new List<Product>(),
+                    IsRestricted = true
+                },
+                new User
+                {
+                    Id = "2",
+                    UserName = "pesho",
+                    PurchaseOrders = new List<Order>(),
+                    Reports = new List<Report>(),
+                    MyProducts = new List<Product>(),
+                    IsRestricted = false
+                },
+                new User
+                {
+                    Id = "3",
+                    UserName = "gosho",
+                    PurchaseOrders = new List<Order>(),
+                    Reports = new List<Report>(),
+                    MyProducts = new List<Product>(),
+                    IsRestricted = false
+                }
+            }.AsQueryable());
+
+            var service = new UsersService(userRepo.Object, null, null);
+            var result = service.IsUserRestricted("stamat");
+
+            var users = service.AllUsers("nqkuv");
+
+            Assert.Contains(users, u => u.IsRestricted);
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void IsUserRestrictedShouldReturnFalseForNotRestrictedUser()
+        {
+            var userRepo = new Mock<IRepository<User>>();
+            userRepo.Setup(r => r.All()).Returns(new List<User>
+            {
+                new User
+                {
+                    Id = "1",
+                    UserName = "stamat",
+                    PurchaseOrders = new List<Order>(),
+                    Reports = new List<Report>(),
+                    MyProducts = new List<Product>(),
+                    IsRestricted = false
+                },
+                new User
+                {
+                    Id = "2",
+                    UserName = "pesho",
+                    PurchaseOrders = new List<Order>(),
+                    Reports = new List<Report>(),
+                    MyProducts = new List<Product>(),
+                    IsRestricted = false
+                },
+                new User
+                {
+                    Id = "3",
+                    UserName = "gosho",
+                    PurchaseOrders = new List<Order>(),
+                    Reports = new List<Report>(),
+                    MyProducts = new List<Product>(),
+                    IsRestricted = false
+                }
+            }.AsQueryable());
+
+            var service = new UsersService(userRepo.Object, null, null);
+            var result = service.IsUserRestricted("stamat");
+
+            var users = service.AllUsers("nqkuv");
+
+            Assert.DoesNotContain(users, u => u.IsRestricted);
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void IsUserRestrictedShouldReturnFalseForNonExistingUser()
+        {
+            var userRepo = new Mock<IRepository<User>>();
+            userRepo.Setup(r => r.All()).Returns(new List<User>
+            {
+                new User
+                {
+                    Id = "1",
+                    UserName = "stamat",
+                    PurchaseOrders = new List<Order>(),
+                    Reports = new List<Report>(),
+                    MyProducts = new List<Product>(),
+                    IsRestricted = false
+                },
+                new User
+                {
+                    Id = "2",
+                    UserName = "pesho",
+                    PurchaseOrders = new List<Order>(),
+                    Reports = new List<Report>(),
+                    MyProducts = new List<Product>(),
+                    IsRestricted = false
+                },
+                new User
+                {
+                    Id = "3",
+                    UserName = "gosho",
+                    PurchaseOrders = new List<Order>(),
+                    Reports = new List<Report>(),
+                    MyProducts = new List<Product>(),
+                    IsRestricted = false
+                }
+            }.AsQueryable());
+
+            var service = new UsersService(userRepo.Object, null, null);
+            var result = service.IsUserRestricted("nqkuv");
+
+            var users = service.AllUsers("nqkuv");
+
+            Assert.DoesNotContain(users, u => u.IsRestricted);
+            Assert.False(result);
+        }
+
+        [Fact]
         public async Task RestrictUserShouldReturnFalseOnTryingUnRestrictingCurrentUser()
         {
             var userRepo = new Mock<IRepository<User>>();

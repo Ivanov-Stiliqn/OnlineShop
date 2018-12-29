@@ -3,7 +3,7 @@
     <div class="hot_p_item">
         <img class="img-fluid" src="@Model.Image" alt="">
         <div class="product_text">
-            <h4><a href="#">@Model.Name</a></h4>
+            <h4><a asp-controller="Categories" asp-action="Products" asp-route-categoryId="@Model.Id">@Model.Name</a></h4>
         </div>
     </div>
 </div>

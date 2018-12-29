@@ -28,5 +28,7 @@ namespace Services.Contracts
         Task RemoveProductFromWishlist(string productId, string username);
 
         ICollection<Product> GetUserProducts(string username);
+
+        bool IsUserRestricted(string username);
     }
 }

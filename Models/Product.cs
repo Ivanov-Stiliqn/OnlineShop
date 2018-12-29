@@ -31,7 +31,7 @@ namespace Models
 
         public DateTime DateOfCreation { get; set; } = DateTime.Now;
 
-        public int Views { get; set; }
+        public string Views { get; set; }
 
         [Required]
         public string Color { get; set; }
@@ -46,7 +46,10 @@ namespace Models
         public string ImageUrls { get; set; }
 
         [NotMapped]
-        public ICollection<string> Images => this.ImageUrls.Split(new []{", "}, StringSplitOptions.RemoveEmptyEntries).ToList(); 
+        public ICollection<string> Images => this.ImageUrls.Split(new []{", "}, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        [NotMapped]
+        public int ViewsCount => this.Views?.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries).Length ?? 0;
 
         public Guid CategoryId { get; set; }
 
