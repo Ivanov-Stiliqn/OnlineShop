@@ -106,6 +106,7 @@ namespace Services
         {
             var categoryFromDb = this.categoryRepository.All().FirstOrDefault(c => c.Id == category.Id);
             categoryFromDb.Name = category.Name;
+            categoryFromDb.Type = category.Type;
 
             if (!string.IsNullOrEmpty(category.Image))
             {

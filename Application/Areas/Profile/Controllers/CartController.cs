@@ -59,7 +59,7 @@ namespace Application.Areas.Profile.Controllers
                 new {area = "Shopping", id = cartModel.Id});
         }
 
-        public IActionResult Remove(string productId)
+        public IActionResult Remove(string productId, string size)
         {
             var check = Guid.TryParse(productId, out Guid parsedProductId);
             if(!check)
@@ -69,7 +69,8 @@ namespace Application.Areas.Profile.Controllers
             }
 
             var cart = HttpContext.Session.GetObjectFromJson<List<CartViewModel>>(this.User.Identity.Name) ?? new List<CartViewModel>();
-            cart = cart.Where(p => p.Id != parsedProductId).ToList();
+            var product = cart.FirstOrDefault(p => p.Id == parsedProductId && p.Size == size);
+            cart.Remove(product);
 
             HttpContext.Session.SetObjectAsJson(this.User.Identity.Name, cart);
 

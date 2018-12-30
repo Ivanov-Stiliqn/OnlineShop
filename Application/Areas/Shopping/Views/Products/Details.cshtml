@@ -235,39 +235,42 @@
                         </div>
                     </div>
                     <div class="col-lg-6">
-                        <div class="review_box">
-                            <h4>Add a Review</h4>
-                            <p>Your Rating:</p>
+                        @if (this.User.Identity.Name != Model.Product.Creator)
+                        {
+                            <div class="review_box">
+                                <h4>Add a Review</h4>
+                                <p>Your Rating:</p>
 
-                            <form class="row contact_form" method="post" id="contactForm">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <select asp-for="@Model.Stars">
-                                            @for (int i = 5; i > 0; i--)
-                                            {
-                                                <option value="@i">
-                                                    @i :
-                                                    @for (int j = 0; j < i; j++)
-                                                    {
-                                                        <span>⭐</span>
-                                                    }
-                                                </option>
-                                            }
-                                        </select>
-                                        <span asp-validation-for="@Model.Stars" class="text-danger"></span>
+                                <form class="row contact_form" method="post" id="contactForm">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <select asp-for="@Model.Stars">
+                                                @for (int i = 5; i > 0; i--)
+                                                {
+                                                    <option value="@i">
+                                                        @i :
+                                                        @for (int j = 0; j < i; j++)
+                                                        {
+                                                            <span>⭐</span>
+                                                        }
+                                                    </option>
+                                                }
+                                            </select>
+                                            <span asp-validation-for="@Model.Stars" class="text-danger"></span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <textarea class="form-control" asp-for="@Model.Comment" id="message" rows="1" placeholder="Review"></textarea>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <textarea class="form-control" asp-for="@Model.Comment" id="message" rows="1" placeholder="Review"></textarea>
+                                        </div>
+                                        <span asp-validation-for="@Model.Comment" class="text-danger"></span>
                                     </div>
-                                    <span asp-validation-for="@Model.Comment" class="text-danger"></span>
-                                </div>
-                                <div class="col-md-12">
-                                    <button type="submit" value="submit" class="btn submit_btn">Submit Now</button>
-                                </div>
-                            </form>
-                        </div>
+                                    <div class="col-md-12">
+                                        <button type="submit" value="submit" class="btn submit_btn">Submit Now</button>
+                                    </div>
+                                </form>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>

@@ -40,6 +40,11 @@ namespace Services
                     .ThenInclude(ps => ps.Size)
                     .FirstOrDefault(p => p.Id == order.ProductId);
 
+                if (product == null)
+                {
+                    throw new InvalidOperationException($"Sorry product {order.ProductName} is no longer available.");
+                }
+
                 if (product.CreatorId == user.Id)
                 {
                     throw new InvalidOperationException("You cannot order your own product.");
@@ -52,12 +57,15 @@ namespace Services
                 if (productSize.Quantity < order.Quantity)
                 {
                     throw new InvalidOperationException(
-                        "Sorry you are too late, current product size is out of stock.");
+                        $"Sorry you are too late, current size for {product.Name} is out of stock.");
                 }
+
+                productSize.Quantity -= order.Quantity;
             }
 
             await this.ordersRepository.AddRangeAsync(orders);
             await this.ordersRepository.SaveChangesAsync();
+            await this.productsRepository.SaveChangesAsync();
         }
 
         public async Task<ICollection<Order>> GetSellOrders(string username)

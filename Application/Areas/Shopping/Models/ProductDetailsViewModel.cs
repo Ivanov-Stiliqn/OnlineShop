@@ -44,7 +44,7 @@ namespace Application.Areas.Shopping.Models
 
         public void ConfigureMapping(AutoMapper.Profile profile)
             => profile.CreateMap<Product, ProductDetailsViewModel>()
-                .ForMember(p => p.Sizes, cfg => cfg.MapFrom(p => p.Sizes.Select(s => s.Map<ProductSize, SizeViewModel>())))
+                .ForMember(p => p.Sizes, cfg => cfg.MapFrom(p => p.Sizes.Where(s => s.Quantity > 0).Select(s => s.Map<ProductSize, SizeViewModel>())))
             .ForMember(p => p.Orders, cfg => cfg.MapFrom(p => p.Orders.Count))
             .ForMember(p => p.Reviews, cfg => cfg.MapFrom(p => p.Reviews.Select(s => s.Map<Review, ReviewViewModel>())))
             .ForMember(p => p.Views, cfg => cfg.MapFrom(p => p.ViewsCount));
