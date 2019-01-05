@@ -13,7 +13,9 @@ namespace Application.Areas.Admin.Models
 {
     public class CreateCategoryViewModel: IMapTo<Category>
     {
-        [Required]
+        [Required, 
+            MinLength(3, ErrorMessage = "Name should be at least 3 symbols long"), 
+            MaxLength(20, ErrorMessage = "Name should be no more than 20 symbols long")]
         [Display(Name = "Category name")]
         public string Name { get; set; }
 

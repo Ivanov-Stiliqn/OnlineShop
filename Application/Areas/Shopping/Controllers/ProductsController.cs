@@ -79,6 +79,7 @@ namespace Application.Areas.Shopping.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateProductViewModel model)
         {
             var categories = this.categoriesService.GetCategories()
@@ -157,6 +158,7 @@ namespace Application.Areas.Shopping.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Details(ProductDetailsPageViewModel model, string id)
         {
             if (this.TempData["CurrentProductId"].ToString() != id)
@@ -232,6 +234,7 @@ namespace Application.Areas.Shopping.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditProductPageViewModel model, string id, string submit)
         {
             var check = Guid.TryParse(id, out Guid parsedId);

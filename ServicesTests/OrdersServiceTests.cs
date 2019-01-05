@@ -73,6 +73,61 @@ namespace ServicesTests
         }
 
         [Fact]
+        public async Task CreateOrdersShouldThrowForNonExistantProduct()
+        {
+            var ordersRepo = new Mock<IRepository<Order>>();
+            var productsRepo = new Mock<IRepository<Product>>();
+            var usersRepo = new Mock<IRepository<User>>();
+
+            usersRepo.Setup(r => r.All()).Returns(new List<User>
+            {
+                new User {Id = "1", UserName = "stamat"},
+                new User {Id = "2", UserName = "pesho"}
+            }.AsQueryable());
+
+            var productId = Guid.NewGuid();
+            var otherProductId = Guid.NewGuid();
+
+            productsRepo.Setup(r => r.All()).Returns(new List<Product>
+            {
+                new Product
+                {
+                    Id = productId,
+                    CreatorId = "2",
+                    Sizes = new List<ProductSize>
+                    {
+                        new ProductSize { Quantity = 1, Size = new Size() }
+                    }
+                },
+                new Product
+                {
+                    Id = otherProductId,
+                    CreatorId = "2",
+                    Sizes = new List<ProductSize>
+                    {
+                        new ProductSize { Quantity = 1, Size = new Size() }
+                    }
+                }
+            }.AsQueryable());
+
+            var orders = new List<Order>();
+            ordersRepo.Setup(r => r.All()).Returns(orders.AsQueryable());
+            var service = new OrdersService(ordersRepo.Object, usersRepo.Object, productsRepo.Object);
+
+            var ordersToAdd = new List<Order>
+            {
+                new Order{ProductId = Guid.NewGuid(), Quantity = 1},
+                new Order{ProductId = Guid.NewGuid(), Quantity = 1}
+            };
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await service.CreateOrders(ordersToAdd, "stamat"));
+
+            ordersRepo.Verify(r => r.AddRangeAsync(ordersToAdd), Times.Never);
+            ordersRepo.Verify(r => r.SaveChangesAsync(), Times.Never);
+        }
+
+        [Fact]
         public async Task CreateOrdersShouldNotAllowPurchasingOfOwnProducts()
         {
             var ordersRepo = new Mock<IRepository<Order>>();

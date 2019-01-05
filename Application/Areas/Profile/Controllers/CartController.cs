@@ -100,6 +100,7 @@ namespace Application.Areas.Profile.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Checkout(CheckoutPageViewModel model)
         {
             var cart = HttpContext.Session.GetObjectFromJson<List<CartViewModel>>(this.User.Identity.Name) ?? new List<CartViewModel>();

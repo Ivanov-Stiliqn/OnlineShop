@@ -33,6 +33,7 @@ namespace Application.Areas.Shopping.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateSizeViewModel model, string submit, string productId, CategoryType type, Sex sex)
         {
             if (!ModelState.IsValid)

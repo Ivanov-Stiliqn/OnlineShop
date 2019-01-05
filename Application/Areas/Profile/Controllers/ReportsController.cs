@@ -32,6 +32,7 @@ namespace Application.Areas.Profile.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateReportViewModel model, string userId)
         {
             model.ReportedUserId = userId;

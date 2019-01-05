@@ -35,7 +35,7 @@ namespace Application.Areas.Shopping.Models
         public ICollection<ReviewViewModel> Reviews { get; set; }
 
         public decimal Rating => this.Reviews.Count > 0
-            ? Math.Ceiling((decimal) this.Reviews.Select(r => r.Stars).Sum() / this.Reviews.Count)
+            ? (decimal) this.Reviews.Select(r => r.Stars).Sum() / this.Reviews.Count
             : 0.0m;
 
         public ICollection<string> Images { get; set; }

@@ -11,7 +11,9 @@ namespace Application.Areas.Shopping.Models
 {
     public class CreateProductViewModel: IMapTo<Product>
     {
-        [Required]
+        [Required, 
+            MinLength(3, ErrorMessage = "Name should be at least 3 symbols long"), 
+            MaxLength(50, ErrorMessage = "Name should be no more than 50 symbols long")]
         public string Name { get; set; }
 
         [Required]
@@ -24,10 +26,14 @@ namespace Application.Areas.Shopping.Models
         [Required]
         public string Color { get; set; }
 
-        [Required]
+        [Required,
+            MinLength(3, ErrorMessage = "Description should be at least 3 symbols long"),
+            MaxLength(200, ErrorMessage = "Description should be no more than 50 symbols long")]
         public string Description { get; set; }
 
-        [Required]
+        [Required,
+             MinLength(3, ErrorMessage = "Details should be at least 3 symbols long"),
+             MaxLength(200, ErrorMessage = "Details should be no more than 50 symbols long")]
         public string Details { get; set; }
 
         [Range(1.0, double.MaxValue, ErrorMessage = "Price should be a positive number.")]

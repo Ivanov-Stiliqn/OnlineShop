@@ -14,7 +14,9 @@ namespace Application.Areas.Profile.Models
 
         public string ReportedUserId { get; set; }
 
-        [Required(ErrorMessage = "Cannot submit empty report.")]
+        [Required(ErrorMessage = "Cannot submit empty report."), 
+            MinLength(5, ErrorMessage = "Report should be at least 5 symbols long"), 
+            MaxLength(200, ErrorMessage = "Report should be no more than 200 symbols long")]
         public string Details { get; set; }
     }
 }

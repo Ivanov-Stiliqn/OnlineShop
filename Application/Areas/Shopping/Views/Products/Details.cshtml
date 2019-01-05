@@ -218,7 +218,7 @@
                                     <h3>Based on @Model.Product.Reviews.Count Reviews</h3>
                                     <ul class="list">
                                         <li>
-                                            @for (int i = 0; i < (int)Model.Product.Rating; i++)
+                                            @for (int i = 0; i < (int)Math.Ceiling(Model.Product.Rating); i++)
                                             {
                                                 <span>⭐</span>
                                             }

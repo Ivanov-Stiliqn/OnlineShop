@@ -92,6 +92,7 @@ namespace Application.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditCategoryPageViewModel model)
         {
             var id = this.TempData["CurrentCategoryId"].ToString();
